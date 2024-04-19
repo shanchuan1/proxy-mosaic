@@ -1,0 +1,39 @@
+{
+  "name": "proxy-mosaic",
+  "version": "1.0.0",
+  "description": "",
+  "bin": {
+    "mosaic": "bin/index.js"
+  },
+  "scripts": {
+    "clear": "rm -rf ./hospital/*"
+  },
+  "author": {
+    "name": "shanchuan",
+    "url": "https://github.com/shanchuan1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shanchuan1/proxy-mosaic",
+    "directory": "proxy-mosaic"
+  },
+  "bugs": {
+    "url": "https://github.com/shanchuan1/proxy-mosaic/issues"
+  },
+  "keywords": [
+    "proxy",
+    "front"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "2.4.2",
+    "fs-extra": "^11.2.0",
+    "simple-git": "^3.24.0"
+  },
+  "engines": {
+    "node": ">= 14.0.0"
+  }
+}
