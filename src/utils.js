@@ -38,14 +38,8 @@ const validateServerConfig = (serverConfig) => {
 };
 
 const isValidIP = (ipAndPortString) => {
-  // 分离IP地址和端口
   const [ipAddress, port] = ipAndPortString.split(":");
   if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ipAddress)) return false;
-
-  // 端口验证
-  const parsedPort = parseInt(port, 10);
-  if (isNaN(parsedPort) || parsedPort < 0 || parsedPort > 65535) return false;
-
   return true;
 };
 

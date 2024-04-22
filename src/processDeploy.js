@@ -2,11 +2,12 @@ const { exec } = require("child_process");
 const { readFromJs } = require("./temp/index");
 const { getHandleServerConfig, getHandleRepos } = require("./getMosaicConfig");
 
+let id_rsa_path = '-i ~/.ssh/id_rsa' // -i 参数指定本地私钥文件的位置
 
 // 获取执行命令
 const getScpCommand = (localPath) => {
   const serverConfig = getHandleServerConfig();
-  return `scp -r ${localPath} ${serverConfig.username}@${serverConfig.ip}:${serverConfig.deployDirectory}`;
+  return `scp -r ${id_rsa_path} ${localPath} ${serverConfig.username}@${serverConfig.ip}:${serverConfig.deployDirectory}`;
 };
 
 // 执行部署
@@ -14,7 +15,7 @@ const processExecDeploy = async (paths) => {
   const { newResourceOutPutPath: localPath, ...otherPathConfig } = readFromJs('data');
   //TODO: 动画
   if (paths[0] === "all") {
-    const scpCommand = getScpCommand(localPath);
+    const scpCommand = getScpCommand(`${localPath}/*`);
     console.log("🚀 ~ processExecDeploy ~ scpCommand:", scpCommand);
     await executeSCPCommand(scpCommand);
   } else {
@@ -31,7 +32,9 @@ const processExecDeploy = async (paths) => {
         }
         const scpCommand = getScpCommand(outputPath);
         console.log("🚀 ~ processExecDeploy ~ scpCommand:", scpCommand);
-        await executeSCPCommand(scpCommand).catch((error) => {
+        await executeSCPCommand(scpCommand).then(stdout=>{
+          console.log('stdout', stdout);
+        }).catch((error) => {
           console.error(`Failed to execute SSH command：${error}`);
         });;
       })
