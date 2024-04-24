@@ -41,7 +41,7 @@ program
       projectName: name,
       options,
     };
-    getCommandOptions(commandArgs);
+    actuator(commandArgs)
   });
 
 program
