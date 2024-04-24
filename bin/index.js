@@ -35,7 +35,7 @@ program
       );
     }
     const commandArgs = {
-    create: {
+      create: {
         currentTemplatePath: path.resolve(__dirname, "../template"),
         currentLocalPathCWD: process.cwd(),
         projectName: name,
@@ -54,20 +54,20 @@ program
 program
   .command("build [paths...]")
   .description("build a new project resource re powered by proxy-mosaic")
-  .option("-d, --dev ", "Development mode")
-  .option("-t, --test ", "Test mode")
-  .option("-s, --sml ", "Simulation mode")
-  .option("-p, --prod ", "Production mode")
+  .option("-d, --dev ", "development mode")
+  .option("-t, --test ", "test mode")
+  .option("-s, --sml ", "simulation mode")
+  .option("-p, --prod ", "production mode")
   .option("-c, --config ", "configs for build mode")
   .option("-a, --add ", "add the configs for build mode")
-  .action((paths, options) => {
-    getInquirerOperation("build", options).then((res) => {
-      const buildMode = res.buildMode || "build";
-      // 只有默认与指定模式后才会向下执行
-      if (options.config || buildMode === "build") {
-        getCommandParams("build", paths, { ...options, buildMode });
-      }
-    });
+  .option("-m, --mode <mode> ", "specify a build mode")
+  .action(async (paths, options) => {
+    const res =
+      ((options.config || options.add) &&
+        (await getInquirerOperation("build", options))) ||
+      {};
+    const configBuildMode = res.buildMode || options.mode || "build";
+    getCommandParams("build", paths, { ...options, configBuildMode });
   });
 
 program
@@ -117,6 +117,13 @@ const getCommandParams = (type, paths, options) => {
   if (type === "checkout") {
     commandArgs[type].branch = options;
     delete commandArgs[type].options;
+  }
+
+  if (type === "build") {
+    // 如果 -c配置的模式与 -m指定的模式都存在 删除-c配置模式
+    options.mode &&
+      options.configBuildMode &&
+      delete commandArgs[type].options.configBuildMode;
   }
 
   // 统一执行器

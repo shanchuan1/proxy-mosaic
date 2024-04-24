@@ -26,6 +26,10 @@ mosaic build  '[appName...]' // 指定打包的app应用
 
 mosaic build -c // 选择打包模式
 mosaic build -a // 新增打包模式
+mosaic build '[appName...]' -m  //指定打包的app应用同时指定打包模式
+// 如：
+// mosaic build h5 -m build:sml  // 打包h5项目并指定打包模式
+
 
 
 // 部署

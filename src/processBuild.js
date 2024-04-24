@@ -12,10 +12,17 @@ const {
 /* 模拟build操作 */
 const processExecBuild = async (params) => {
   try {
-    const { paths, options:{buildMode}} = params
+    const { paths, options:{configBuildMode, mode}} = params
     const { newResourceOutPutPath } = readFromJs('data');
     const repos = getHandleRepos(paths);
-    const {build: build_Mode} = getScriptsForBuild(buildMode)
+    console.log('🚀 ~ processExecBuild ~ repos:', repos)
+    let build_Mode;
+    if (!mode) {
+      const {build} = getScriptsForBuild(configBuildMode)
+      build_Mode = build
+    } else { 
+      build_Mode = mode
+    }
     console.log('🚀 ~ processExecBuild ~ build_Mode:', build_Mode)
     // return
     await Promise.all(
