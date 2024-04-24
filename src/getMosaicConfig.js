@@ -78,8 +78,40 @@ const validatePaths = (projectNames, projectsList) => {
   return projectNames.filter((name) => !matchedNames.has(name));
 };
 
+// 获取仓库项目内package.json文件的scripts脚本内容
+const getReposPackageScripts = () => {
+  const repos = readFromJs("repos");
+  let scriptsMap = {}
+  for (const key in repos) {
+    scriptsMap[key] = require(`${repos[key].dest}/package.json`).scripts || {}
+  }
+  return scriptsMap
+}
+
+
+const getScriptsForBuild = (mode) => {
+  const scripts = getReposPackageScripts()
+  console.log('🚀 ~ getScriptsForBuild ~ scripts:', scripts)
+  console.log('🚀 ~ getScriptsForBuild ~ mode:', mode)
+
+  let buildMap = {}
+  for (const key in scripts) {
+    if (['dev', 'test', 'sml', 'prod'].includes(mode)) {
+      buildMap[key] = Object.keys(scripts[key]).find(v=> [`build:${mode}`,`build_${mode}`].includes(v))
+      buildMap.build = Object.keys(scripts[key]).find(v=> [`build:${mode}`,`build_${mode}`].includes(v))
+    } else {
+      buildMap[key] = mode
+      buildMap.build = mode
+    }
+    
+  }
+  console.log('buildMap', buildMap);
+  return buildMap
+}
+
 module.exports = {
   getHandleRepos,
   getHandleServerConfig,
-  validatePaths
+  validatePaths,
+  getScriptsForBuild,
 };

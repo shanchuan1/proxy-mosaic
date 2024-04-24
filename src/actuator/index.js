@@ -31,7 +31,7 @@ const actuatorEvents = {
   create: async (params) => await createTemplateProject(params),
   clone: async (params) =>
     await processRepositories(OPERATIONS.CLONE, params.paths),
-  build: async (params) => await processExecBuild(params.paths),
+  build: async (params) => await processExecBuild(params),
   deploy: async (params) => await processExecDeploy(params.paths),
   checkout: async (params) => {
     console.log('params', params);
@@ -48,6 +48,7 @@ const actuator = async (actOptions) => {
   console.log("🚀 ~ actuator ~ actOptions:", actOptions);
   if (isEmptyObject(actOptions)) return;
   const { key, value } = getFirstLevelKeyValue(actOptions);
+  console.log('🚀 ~ actuator ~ key, value:', key, value)
 
   try {
     await actuatorEvents[key](value);

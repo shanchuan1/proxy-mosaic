@@ -1,5 +1,5 @@
 const path = require("path");
-const { getHandleRepos } = require("./getMosaicConfig");
+const { getHandleRepos, getScriptsForBuild } = require("./getMosaicConfig");
 const { readFromJs, appendToJs } = require("./temp/index");
 const { execProcess } = require("./exec");
 const {
@@ -10,16 +10,19 @@ const {
 } = require("./processFile");
 
 /* 模拟build操作 */
-const processExecBuild = async (paths) => {
+const processExecBuild = async (params) => {
   try {
+    const { paths, options:{buildMode}} = params
     const { newResourceOutPutPath } = readFromJs('data');
     const repos = getHandleRepos(paths);
-    console.log("🚀 ~ processExecBuild ~ repos:", repos);
+    const {build: build_Mode} = getScriptsForBuild(buildMode)
+    console.log('🚀 ~ processExecBuild ~ build_Mode:', build_Mode)
+    // return
     await Promise.all(
       repos.map(async (repo) => {
         // TODO: 动画
         console.log("开始执行build操作");
-        await execProcess("BUILD", repo);
+        await execProcess("BUILD", {repo, build_Mode});
 
         const content = await getFileContent(
           doesFileExist(`${repo.dest}/vue.config.js`)

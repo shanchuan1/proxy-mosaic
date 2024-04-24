@@ -6,16 +6,16 @@ global.DEFAULT_PACKAGE_MANAGER = "yarn";
 
 const packManager = {
   yarn: {
-    INSTALL: (repo) => `cd ${repo.dest} && yarn`,
-    BUILD: (repo) => `cd ${repo.dest} && yarn build`,
+    INSTALL: ({repo}) => `cd ${repo.dest} && yarn`,
+    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && yarn ${build_Mode}`,
   },
   npm: {
-    INSTALL: (repo) => `cd ${repo.dest} && npm run install`,
-    BUILD: (repo) => `cd ${repo.dest} && npm run build`,
+    INSTALL: ({repo}) => `cd ${repo.dest} && npm run install`,
+    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && npm run ${build_Mode}`,
   },
   pnpm: {
-    INSTALL: (repo) => `cd ${repo.dest} && pnpm install`,
-    BUILD: (repo) => `cd ${repo.dest} && pnpm run build`,
+    INSTALL: ({repo}) => `cd ${repo.dest} && pnpm install`,
+    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && pnpm run ${build_Mode}`,
   },
 };
 

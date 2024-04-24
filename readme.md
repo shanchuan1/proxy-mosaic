@@ -24,9 +24,12 @@ mosaic checkout 'branch' '[appName...]' // 指定切换分支的应用
 mosaic build  // 默认即为 mosaic build all  ===>  构建全部应用
 mosaic build  '[appName...]' // 指定打包的app应用
 
+mosaic build -c // 选择打包模式
+mosaic build -a // 新增打包模式
+
 
 // 部署
-mosaic deploy // 默认即为 mosaic build all   ===>  部署全部应用
+mosaic deploy // 默认即为 mosaic deploy all   ===>  部署全部应用
 mosaic deploy  '[appName...]' // 指定部署的app应用
 ```
 
