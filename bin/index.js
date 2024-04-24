@@ -35,13 +35,14 @@ program
       );
     }
     const commandArgs = {
-      type: "create",
-      currentTemplatePath: path.resolve(__dirname, "../../template"),
-      currentLocalPathCWD: process.cwd(),
-      projectName: name,
-      options,
+    create: {
+        currentTemplatePath: path.resolve(__dirname, "../template"),
+        currentLocalPathCWD: process.cwd(),
+        projectName: name,
+        options,
+      },
     };
-    actuator(commandArgs)
+    actuator(commandArgs);
   });
 
 program
@@ -121,7 +122,6 @@ const getCommandParams = (type, paths, options) => {
   // 统一执行器
   actuator(commandArgs);
 };
-
 
 // 执行命令行解析
 program.parse(process.argv);
