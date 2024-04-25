@@ -7,7 +7,7 @@ npm install -g proxy-mosaic
 yarn add proxy-mosaic -g
 ```
 
-##  使用
+#  使用
 ```js
 // 创建mosaic工程
 mosaic create 'projectName'  // 创建本地模板
