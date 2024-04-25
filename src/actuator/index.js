@@ -32,7 +32,7 @@ const actuatorEvents = {
   clone: async (params) =>
     await processRepositories(OPERATIONS.CLONE, params.paths),
   build: async (params) => await processExecBuild(params),
-  deploy: async (params) => await processExecDeploy(params.paths),
+  deploy: async (params) => await processExecDeploy(params),
   checkout: async (params) => {
     console.log('params', params);
     await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch)

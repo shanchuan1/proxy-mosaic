@@ -30,7 +30,8 @@ const processExecBuild = async (params) => {
         // TODO: 动画
         console.log("开始执行build操作");
         await execProcess("BUILD", {repo, build_Mode});
-
+        console.log('build操作执行完成');
+        
         const content = await getFileContent(
           doesFileExist(`${repo.dest}/vue.config.js`)
         );

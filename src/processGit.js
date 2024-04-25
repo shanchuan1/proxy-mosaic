@@ -8,7 +8,7 @@ const { readFromJs } = require("./temp/index");
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
-    await execProcess("INSTALL", repo);
+    await execProcess("INSTALL", {repo});
   },
   pull: async (repo, gitInstance) =>
     gitInstance.pull() &&
@@ -86,7 +86,7 @@ const getReposStatus = (options) => {
   const outputObj = {};
   for (const key in repos) {
     const item = repos[key];
-    outputObj[key] = item.branch;
+    outputObj[key] = item.branch || 'master';
   }
   if (options.paths[0] === "all") {
     return outputObj;

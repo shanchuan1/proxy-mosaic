@@ -5,12 +5,6 @@ const repos = [
   },
 ];
 
-const serverConfig = {
-  username: '',
-  ip: "",
-  deployDirectory: "",
-}
 module.exports = {
-  repos,
-  serverConfig
+  repos
 };

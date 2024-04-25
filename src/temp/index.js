@@ -2,10 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const fileDataPath = path.resolve(__dirname, "../temp/data.js");
 const fileReposPath = path.resolve(__dirname, "../temp/reposStatus.js");
+const serverConfigPath = path.resolve(__dirname, "../temp/serverConfig.js");
+const buildModePath = path.resolve(__dirname, "../temp/buildMode.js");
 
 const fileMap = {
   data: fileDataPath,
   repos: fileReposPath,
+  server: serverConfigPath,
+  build: buildModePath
 }
 
 // 尝试读取并解析JS文件中的对象

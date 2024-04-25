@@ -3,7 +3,7 @@ const { Command } = require("commander");
 const packageJson = require("../package.json");
 const minimist = require("minimist");
 const path = require("path");
-const { buildInquirer } = require("../src/actuator/inquirer");
+const { buildInquirer, deployInquirer } = require("../src/actuator/inquirer");
 const { actuator, checkNodeVersion } = require("../src/actuator/index");
 
 // const leven = require('leven')
@@ -62,19 +62,35 @@ program
   .option("-a, --add ", "add the configs for build mode")
   .option("-m, --mode <mode> ", "specify a build mode")
   .action(async (paths, options) => {
+    // -c 选择配置 -a 新增配置 走交互命令 获取打包模式
     const res =
       ((options.config || options.add) &&
         (await getInquirerOperation("build", options))) ||
       {};
-    const configBuildMode = res.buildMode || options.mode || "build";
+    const matchingOption = ["dev", "test", "sml", "prod"].find(
+      (option) => options[option]
+    );
+    let configBuildMode =
+      matchingOption || res.buildMode || options.mode || "build";
+
     getCommandParams("build", paths, { ...options, configBuildMode });
   });
 
 program
   .command("deploy [paths...]")
   .description("deploy a new project resource powered by proxy-mosaic")
-  .option("-p, --path <path>", "Specify the project you need to deploy")
-  .action((paths, options) => getCommandParams("deploy", paths, options));
+  .option("-c, --config ", "configs for the server")
+  .option("-a, --add ", "add the configs for the server")
+  .action(async (paths, options) => {
+    if (!(options.config || options.add)) {
+      // 默认要部署服务器，必需携带-c，或-a参数指定
+      return console.log(
+        `the server must be specified, You need to specify or configure a server through '-c' or '-a'`
+      );
+    }
+    const res = await getInquirerOperation("deploy", options);
+    getCommandParams("deploy", paths, { ...options, serverConfig: res });
+  });
 
 program
   .command("checkout <branch> [projects...]")
@@ -93,15 +109,19 @@ program
 
 // 获取特定的交互
 const getInquirerOperation = async (type, options) => {
-  console.log("🚀 ~ getInquirerOperation ~ options:", options);
   if (type === "build") {
     return await buildInquirer(options);
   }
+  if (type === "deploy") {
+    return await deployInquirer(options);
+  }
 };
 
+// 通用获取命令参数
 const getCommandParams = (type, paths, options) => {
-  console.log(`🚀 ~ getCommandParams ~ options for ${type}:`, options);
-  console.log(`🚀 ~ getCommandParams ~ paths for ${type}:`, paths);
+  console.log("🚀 ~ getCommandParams ~ options:", options);
+  console.log("🚀 ~ getCommandParams ~ paths:", paths);
+  console.log("🚀 ~ getCommandParams ~ type:", type);
 
   if (!paths.length) {
     paths = ["all"];

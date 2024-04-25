@@ -6,16 +6,17 @@ global.DEFAULT_PACKAGE_MANAGER = "yarn";
 
 const packManager = {
   yarn: {
-    INSTALL: ({repo}) => `cd ${repo.dest} && yarn`,
-    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && yarn ${build_Mode}`,
+    INSTALL: ({ repo }) => `cd ${repo.dest} && yarn`,
+    BUILD: ({ repo, build_Mode }) => `cd ${repo.dest} && yarn ${build_Mode}`,
   },
   npm: {
-    INSTALL: ({repo}) => `cd ${repo.dest} && npm run install`,
-    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && npm run ${build_Mode}`,
+    INSTALL: ({ repo }) => `cd ${repo.dest} && npm run install`,
+    BUILD: ({ repo, build_Mode }) => `cd ${repo.dest} && npm run ${build_Mode}`,
   },
   pnpm: {
-    INSTALL: ({repo}) => `cd ${repo.dest} && pnpm install`,
-    BUILD: ({repo, build_Mode}) => `cd ${repo.dest} && pnpm run ${build_Mode}`,
+    INSTALL: ({ repo }) => `cd ${repo.dest} && pnpm install`,
+    BUILD: ({ repo, build_Mode }) =>
+      `cd ${repo.dest} && pnpm run ${build_Mode}`,
   },
 };
 
@@ -30,12 +31,13 @@ const execLog = (command, repo) => {
 };
 
 /* 执行shell脚本 */
-const execProcess = async (command, repo) => {
+const execProcess = async (command, options) => {
   try {
-    console.log("🚀 ~ execProcess ~ command:", command);
-    const bashCommand =
-      packManager[global.DEFAULT_PACKAGE_MANAGER][command](repo);
-    console.log("🚀 ~ execProcess ~ bashCommand:", bashCommand);
+    const { repo, build_Mode } = options;
+    const bashCommand = packManager[global.DEFAULT_PACKAGE_MANAGER][command]({
+      repo,
+      build_Mode,
+    });
 
     const { stdout, stderr } = await exec(bashCommand);
 

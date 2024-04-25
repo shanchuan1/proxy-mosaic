@@ -1,26 +1,28 @@
 const { exec } = require("child_process");
 const { readFromJs } = require("./temp/index");
-const { getHandleServerConfig, getHandleRepos } = require("./getMosaicConfig");
+const { getHandleRepos } = require("./getMosaicConfig");
+const { validateServerConfig } = require("./utils");
 
 let id_rsa_path = '-i ~/.ssh/id_rsa' // -i 参数指定本地私钥文件的位置
 
-// 获取执行命令
-const getScpCommand = (localPath) => {
-  const serverConfig = getHandleServerConfig();
+// 获取拷贝远程服务器的执行命令
+const getScpCommand = (localPath, serverConfig) => {
+  validateServerConfig(serverConfig)
   return `scp -r ${id_rsa_path} ${localPath} ${serverConfig.username}@${serverConfig.ip}:${serverConfig.deployDirectory}`;
 };
 
 // 执行部署
-const processExecDeploy = async (paths) => {
+const processExecDeploy = async (configs) => {
+  console.log('🚀 ~ processExecDeploy ~ configs:', configs)
+  const {paths, options: {serverConfig}} = configs
+  // return
   const { newResourceOutPutPath: localPath, ...otherPathConfig } = readFromJs('data');
   //TODO: 动画
   if (paths[0] === "all") {
-    const scpCommand = getScpCommand(`${localPath}/*`);
-    console.log("🚀 ~ processExecDeploy ~ scpCommand:", scpCommand);
+    const scpCommand = getScpCommand(`${localPath}/*`, serverConfig);
     await executeSCPCommand(scpCommand);
   } else {
     const repos = getHandleRepos(paths);
-    console.log("🚀 ~ processExecDeploy ~ repos:", repos);
     await Promise.all(
       repos.map(async (repo) => {
         const outputPath = otherPathConfig[repo.name];
@@ -30,8 +32,7 @@ const processExecDeploy = async (paths) => {
           );
           return;
         }
-        const scpCommand = getScpCommand(outputPath);
-        console.log("🚀 ~ processExecDeploy ~ scpCommand:", scpCommand);
+        const scpCommand = getScpCommand(outputPath, serverConfig);
         await executeSCPCommand(scpCommand).then(stdout=>{
           console.log('stdout', stdout);
         }).catch((error) => {
