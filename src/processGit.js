@@ -3,12 +3,16 @@ const { getHandleRepos } = require("./getMosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
 const { readFromJs } = require("./temp/index");
+const { processOra } = require("./actuator/ora");
+const { spinner_start, spinner_succeed } = processOra();
+
 
 // 定义对应的操作函数
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
-    await execProcess("INSTALL", {repo});
+    await spinner_succeed(`${repo.name} 的clone操作已执行完成`);
+    await execProcess("INSTALL", { repo });
   },
   pull: async (repo, gitInstance) =>
     gitInstance.pull() &&
@@ -34,45 +38,43 @@ const processRepositories = async (operation, paths, branch) => {
     const repos = getHandleRepos(paths, branch);
     console.log("🚀 ~ repos:", repos);
     // return;
-    await Promise.all(
-      repos.map(async (repo) => {
-        const isHasDir = await checkDir(repo.dest);
-        const isDirEmpty = await checkDirEmpty(repo.dest);
-        console.log("🚀 ~ repos.map ~ isDirEmpty:", isDirEmpty);
-        console.log("🚀 ~ repos.map ~ isHasDir:", isHasDir);
+    for (const repo of repos) {
+      const isHasDir = await checkDir(repo.dest);
+      const isDirEmpty = await checkDirEmpty(repo.dest);
+      console.log("🚀 ~ repos.map ~ isDirEmpty:", isDirEmpty);
+      console.log("🚀 ~ repos.map ~ isHasDir:", isHasDir);
 
-        const gitInstance = Git(repo.dest);
+      const gitInstance = Git(repo.dest);
 
-        /* 如过本地仓库不存在 */
-        if (!isHasDir || isDirEmpty) {
-          // 只能执行clone操作
-          operation = "clone";
-        }
+      /* 如过本地仓库不存在 */
+      if (!isHasDir || isDirEmpty) {
+        // 只能执行clone操作
+        operation = "clone";
+      }
 
-        if (isHasDir && !isDirEmpty && operation === "clone") {
-          operation = "pull";
-        }
-        // TODO: 动画
-        console.log("开始执行git操作");
-        // 克隆或拉取操作
-        await OPERATION_FUNCTIONS[operation](repo, gitInstance).catch((err) => {
-          console.error(
-            `Operation "${operation}" for repository ${repo.url} failed:`,
-            err
-          );
-          throw err;
-        });
+      if (isHasDir && !isDirEmpty && operation === "clone") {
+        operation = "pull";
+      }
 
-        // 特殊处理分支切换成功的输出
-        if (operation === "checkout" && "branch" in repo) {
-          console.log(
-            `Repository ${repo.url} has been checked out to branch ${repo.branch}.`
-          );
-        }
-      })
-    );
+      // TODO: 动画
+      await spinner_start(`${repo.name}正在执行git ${operation} 操作...`);
+      // 克隆或拉取操作
+      await OPERATION_FUNCTIONS[operation](repo, gitInstance).catch((err) => {
+        console.error(
+          `Operation "${operation}" for repository ${repo.url} failed:`,
+          err
+        );
+        throw err;
+      });
 
-    // console.log(successMessage);
+      // 特殊处理分支切换成功的输出
+      if (operation === "checkout" && "branch" in repo) {
+        console.log(
+          `Repository ${repo.url} has been checked out to branch ${repo.branch}.`
+        );
+      }
+      
+    }
   } catch (err) {
     console.log("err:", err);
   }
@@ -86,7 +88,7 @@ const getReposStatus = (options) => {
   const outputObj = {};
   for (const key in repos) {
     const item = repos[key];
-    outputObj[key] = item.branch || 'master';
+    outputObj[key] = item.branch || "master";
   }
   if (options.paths[0] === "all") {
     return outputObj;

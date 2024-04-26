@@ -3,7 +3,8 @@ const path = require("path");
 const fse = require("fs-extra");
 const fsPromises = fs.promises;
 const { greenLog } = require("./terminalLog");
-const { appendToJs } = require('./temp/index')
+const { appendToJs } = require("./temp/index");
+const { processOra } = require("./actuator/ora");
 
 // 获取文件夹名称
 const getLastFolderFromPath = (filePath) => {
@@ -12,8 +13,6 @@ const getLastFolderFromPath = (filePath) => {
 
 // 检查目录是否存在
 const checkDir = async (dirPath) => {
-  console.log("🚀 ~ checkDir ~ dirPath:", dirPath);
-
   try {
     await fsPromises.access(dirPath, fs.constants.F_OK | fs.constants.W_OK);
     greenLog(`目录: << ${getLastFolderFromPath(dirPath)} >> 已存在`);
@@ -48,7 +47,7 @@ const copyDirContents = async (src, dest) => {
   try {
     await fse.copy(src, dest, { overwrite: true });
     greenLog(
-      `Front end resources << ${getLastFolderFromPath(dest)} >> are ready`
+      `\n Front end resources << ${getLastFolderFromPath(dest)} >> are ready`
     );
   } catch (err) {
     console.error("An error occurred during the copying process:", err);
@@ -70,7 +69,6 @@ const checkDirEmpty = async (dirPath) => {
   }
 };
 
-
 // 拷贝模板内容
 const copyTemplateContents = async (options) => {
   const {
@@ -79,7 +77,9 @@ const copyTemplateContents = async (options) => {
     projectName = "front",
   } = options;
   try {
-    // TODO: 动画
+    // TODO: 后期考虑远程仓库版本优化此本地创建模式
+    const { spinner_start, spinner_succeed } = processOra();
+    // await spinner_start(`正在创建${projectName}工程`);
     // 首先将模板目录下的所有内容拷贝到目标目录
     await fse.copy(srcDir, destDir, { overwrite: true });
 
@@ -92,8 +92,9 @@ const copyTemplateContents = async (options) => {
 
     // 根据重置映射表，在目标目录下进行重置操作
     await renameDirectoriesSerially(outPutEdPath, renamingMap);
-
+    await spinner_succeed(`mosaic_project 工程已创建完成`);
     greenLog(`Templates resource << mosaic_project >> have been ready.`);
+    process.exit(1);
   } catch (err) {
     console.error(
       "An error occurred during the copying and/or renaming process:",
@@ -112,10 +113,11 @@ const renameDirectoriesSerially = async (dir, renamingMap) => {
     if (newName) {
       const newItemPath = path.join(dir, newName);
       await fse.mkdir(newItemPath, { recursive: true });
-      
+
       newName.split("_")[1] === "output" &&
-        appendToJs('newResourceOutPutPath', newItemPath, 'data')
-      newName.split("_")[1] === "pro" && appendToJs('newProjectPath', newItemPath, 'data');
+        appendToJs("newResourceOutPutPath", newItemPath, "data");
+      newName.split("_")[1] === "pro" &&
+        appendToJs("newProjectPath", newItemPath, "data");
 
       // 使用move方法替代单独的创建和删除操作
       await fse.move(itemPath, newItemPath, {
@@ -125,7 +127,6 @@ const renameDirectoriesSerially = async (dir, renamingMap) => {
     }
   }
 };
-
 
 module.exports = {
   checkDir,

@@ -34,6 +34,7 @@
     "fs-extra": "^11.2.0",
     "inquirer": "8.2.4",
     "minimist": "^1.2.8",
+    "ora": "5.4.1",
     "simple-git": "^3.24.0"
   },
   "engines": {
