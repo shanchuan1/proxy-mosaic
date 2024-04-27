@@ -4,6 +4,7 @@ const { getHandleRepos } = require("./getMosaicConfig");
 const { validateServerConfig } = require("./utils");
 const { processOra } = require("./actuator/ora");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
+const chalk = require("chalk");
 
 let id_rsa_path = "-i ~/.ssh/id_rsa"; // -i 参数指定本地私钥文件的位置
 
@@ -23,13 +24,13 @@ const processExecDeploy = async (configs) => {
     readFromJs("data");
   if (paths[0] === "all") {
     const scpCommand = getScpCommand(`${localPath}/*`, serverConfig);
-    spinner_start(`Deploying all projects to${serverConfig.ip}Server`);
+    spinner_start(`Deploying all projects to ${serverConfig.ip} Server`);
     await executeSCPCommand(scpCommand)
       .then((res) => {
-        spinner_succeed(`Deployed successfully：${res}`);
+        spinner_succeed(`Deployed all successfully：${res}`);
       })
       .catch((err) => {
-        spinner_fail(`Failed to execute SSH command：${error}`);
+        spinner_fail(`Failed to execute SSH command：${err}`);
         process.exit(1);
       });
   } else {
@@ -37,16 +38,21 @@ const processExecDeploy = async (configs) => {
     for (const repo of repos) {
       const outputPath = otherPathConfig[repo.name];
       if (!outputPath) {
-        console.error(
-          `Unable to find corresponding path configuration:${repo.name}`
-        );
-        return;
+        spinner_fail(`Unable to find corresponding path configuration:${repo.name}`);
+        process.exit(1);
       }
       const scpCommand = getScpCommand(outputPath, serverConfig);
-      spinner_start(`Deploying${repo.name}to${serverConfig.ip}Server`);
+      spinner_start(
+        `Deploying ${chalk.blue(repo.name)} to ${serverConfig.ip} Server`
+      );
       await executeSCPCommand(scpCommand)
         .then((stdout) => {
-          spinner_succeed(`${repo.name} deployed successfully：${stdout}`);
+          spinner_succeed(
+            `${chalk.blue(repo.name)} deployed successfully：${stdout}`
+          );
+          if (repo.isLastRepo) {
+            process.exit(1);
+          }
         })
         .catch((error) => {
           spinner_fail(`Failed to execute SSH command：${error}`);

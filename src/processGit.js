@@ -5,6 +5,7 @@ const { execProcess } = require("./exec");
 const { readFromJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
 const { spinner_start, spinner_succeed } = processOra();
+const chalk = require("chalk");
 
 
 // 定义对应的操作函数
@@ -22,10 +23,10 @@ const OPERATION_FUNCTIONS = {
   checkout: async (repo, gitInstance) => {
     if ("branch" in repo) {
       gitInstance.checkout(repo.branch);
-      console.log(
-        `\n Repository ${repo.name} has been checked out to branch ${repo.branch}.`
-      );
-      await spinner_succeed(`${repo.name} CHECKOUT operation has been completed`);
+      await spinner_succeed(`${chalk.blue(repo.name)} CHECKOUT operation has been completed, and it has been checked out to branch ${chalk.blue(repo.branch)}`);
+      if (repo.isLastRepo) {
+        process.exit(1);
+      }
       return;
     }
     console.warn(

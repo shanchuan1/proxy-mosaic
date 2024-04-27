@@ -8,6 +8,9 @@ const {
   doesFileExist,
   copyDirContents,
 } = require("./processFile");
+const { processOra } = require("./actuator/ora");
+const chalk = require("chalk");
+const { spinner_fail } = processOra();
 
 /* 模拟build操作 */
 const processExecBuild = async (params) => {
@@ -23,7 +26,16 @@ const processExecBuild = async (params) => {
       const { build } = getScriptsForBuild(configBuildMode);
       build_Mode = build;
     } else {
-      build_Mode = mode;
+      const { build, ...otherRepos } = getScriptsForBuild(mode);
+      if (!build) {
+        spinner_fail(
+          `The current input build mode does not exist in the project: ${chalk.blue(
+            Object.keys(otherRepos).join(",")
+          )}`
+        );
+        process.exit(1);
+      }
+      build_Mode = build;
     }
 
     // 循环执行build
@@ -38,6 +50,8 @@ const processExecBuild = async (params) => {
           ? `${newResourceOutPutPath}/${repo.name}`
           : `${newResourceOutPutPath}/${content.outputDir}`;
       appendToJs(repo.name, inputPath, "data");
+
+      // TODO: 后面考虑要不要保留这一层校验
       await checkDir(newResourceOutPutPath);
       await checkDir(inputPath);
       await copyDirContents(outputPath, inputPath);

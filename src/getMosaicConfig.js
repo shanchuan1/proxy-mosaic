@@ -24,12 +24,15 @@ const getHandleRepos = (paths, branch) => {
   validateRepos(mosaicConfig.repos);
   const { newProjectPath } = readFromJs("data");
   const arrayRepos = mosaicConfig.repos
-    .map((v) => {
+    .map((v, index) => {
       const item = {
         ...v,
         dest: `${newProjectPath}/${v.name}`,
         byName: v.name.split("-")[v.name.split("-").length - 1],
       };
+      if (index === mosaicConfig.repos.length - 1) {
+        item.isLastRepo = true;
+      }
       if (branch) {
         item.branch = branch;
       }
@@ -90,7 +93,6 @@ const getReposPackageScripts = () => {
  */
 const getScriptsForBuild = (mode) => {
   const scripts = getReposPackageScripts();
-
   let buildMap = {};
   for (const key in scripts) {
     if (["dev", "test", "sml", "prod"].includes(mode)) {
@@ -100,8 +102,9 @@ const getScriptsForBuild = (mode) => {
       buildMap[key] = build_mode;
       buildMap.build = build_mode;
     } else {
-      buildMap[key] = mode;
-      buildMap.build = mode;
+      const build_mode = Object.keys(scripts[key]).find((v) => v === mode);
+      buildMap[key] = build_mode;
+      buildMap.build = build_mode;
     }
   }
   return buildMap;

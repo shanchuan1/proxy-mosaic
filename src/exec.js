@@ -41,7 +41,7 @@ const execProcess = async (command, options) => {
     });
     const { spinner_start, spinner_succeed } = processOra()
 
-    await spinner_start(`${repo.name}: Executing${command}operation...`)
+    await spinner_start(`${repo.name}: Executing ${build_Mode} operation...`)
     const { stdout, stderr } = await exec(bashCommand);
 
     execLog(command, repo)(stdout);
@@ -49,7 +49,10 @@ const execProcess = async (command, options) => {
     if (stderr) {
       console.error(`Yarn install errors for ${repo.url}: ${stderr}`);
     }
-    await spinner_succeed(`The ${repo.name} of ${command}operation has been completed`)
+    await spinner_succeed(`The ${repo.name} of ${build_Mode} operation has been completed`)
+    if (repo.isLastRepo) {
+      process.exit(1);
+    }
   } catch (error) {
     console.error(`Failed to run '${command}' in ${repo.url}:`, error);
     throw error; 

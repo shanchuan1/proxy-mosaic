@@ -13,10 +13,14 @@ const blueLog = (text) => {
 const redLog = (text) => {
     return log(chalk.red.bold(text));
 }
+const magentaLog = (text) => {
+    return log(chalk.magenta(text));
+}
 
 module.exports = {
     commonLog,
     greenLog,
     blueLog,
-    redLog
+    redLog,
+    magentaLog
 }
