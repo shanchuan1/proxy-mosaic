@@ -1,7 +1,8 @@
+const isOnline = require("is-online");
 const requiredVersion = require("../../package.json").engines.node;
 const {
-  // copyTemplateContents: createTemplateProject,
-  getOriginTemplate: createTemplateProject,
+  copyTemplateContents: createTemplateProject,
+  getOriginTemplate,
 } = require("../processFile");
 const { processRepositories, getReposStatus } = require("../processGit");
 const { OPERATIONS } = require("../constant");
@@ -29,16 +30,24 @@ const checkNodeVersion = (wanted = requiredVersion, id = "proxy-mosaic") => {
 
 // 执行器事件
 const actuatorEvents = {
-  create: async (params) => await createTemplateProject(params),
+  create: async (params) => {
+    const online = await isOnline();
+    ((await online) && getOriginTemplate(params)) ||
+      createTemplateProject(params);
+  },
   clone: async (params) =>
     await processRepositories(OPERATIONS.CLONE, params.paths),
   build: async (params) => await processExecBuild(params),
   deploy: async (params) => await processExecDeploy(params),
-  checkout: async (params) => await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
-  'show_branch': async (params) => {
-   const reposStatus = getReposStatus(params)
-   console.log('The current status of the warehouse being queried', reposStatus)
-  }
+  checkout: async (params) =>
+    await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
+  show_branch: async (params) => {
+    const reposStatus = getReposStatus(params);
+    console.log(
+      "The current status of the warehouse being queried",
+      reposStatus
+    );
+  },
 };
 
 // 统一执行器
