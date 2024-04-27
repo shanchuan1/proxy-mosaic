@@ -1,6 +1,7 @@
 const requiredVersion = require("../../package.json").engines.node;
 const {
-  copyTemplateContents: createTemplateProject,
+  // copyTemplateContents: createTemplateProject,
+  getOriginTemplate: createTemplateProject,
 } = require("../processFile");
 const { processRepositories, getReposStatus } = require("../processGit");
 const { OPERATIONS } = require("../constant");

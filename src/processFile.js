@@ -5,6 +5,10 @@ const fsPromises = fs.promises;
 const { greenLog } = require("./terminalLog");
 const { appendToJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
+const downgit = require("download-git-repo");
+const rimraf = require("rimraf");
+
+const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
 // 获取文件夹名称
 const getLastFolderFromPath = (filePath) => {
@@ -15,12 +19,18 @@ const getLastFolderFromPath = (filePath) => {
 const checkDir = async (dirPath) => {
   try {
     await fsPromises.access(dirPath, fs.constants.F_OK | fs.constants.W_OK);
-    greenLog(`Directory: << ${getLastFolderFromPath(dirPath)} >> already exists`);
+    greenLog(
+      `Directory: << ${getLastFolderFromPath(dirPath)} >> already exists`
+    );
     return true;
   } catch (accessErr) {
     try {
       await fsPromises.mkdir(dirPath, { recursive: true });
-      greenLog(`Directory:  << ${getLastFolderFromPath(dirPath)} >> created successfully `);
+      greenLog(
+        `Directory:  << ${getLastFolderFromPath(
+          dirPath
+        )} >> created successfully `
+      );
       return false;
     } catch (mkdirErr) {
       console.error(`Failed to create directory: ${mkdirErr}`);
@@ -78,7 +88,6 @@ const copyTemplateContents = async (options) => {
   } = options;
   try {
     // TODO: 后期考虑远程仓库版本优化此本地创建模式
-    const { spinner_start, spinner_succeed } = processOra();
     // await spinner_start(`正在创建${projectName}工程`);
     // 首先将模板目录下的所有内容拷贝到目标目录
     await fse.copy(srcDir, destDir, { overwrite: true });
@@ -92,7 +101,9 @@ const copyTemplateContents = async (options) => {
 
     // 根据重置映射表，在目标目录下进行重置操作
     await renameDirectoriesSerially(outPutEdPath, renamingMap);
-    await spinner_succeed(`mosaic_project project has been created and completed`);
+    await spinner_succeed(
+      `mosaic_project project has been created and completed`
+    );
     greenLog(`Templates resource << mosaic_project >> have been ready.`);
     process.exit(1);
   } catch (err) {
@@ -128,6 +139,31 @@ const renameDirectoriesSerially = async (dir, renamingMap) => {
   }
 };
 
+const getOriginTemplate = async ({
+  currentLocalPathCWD: destDir,
+  projectName = "front",
+}) => {
+  const renamingMap = {
+    front_output: `${projectName}_output`,
+    front_pro: `${projectName}_pro`,
+  };
+  const gitHubPath = "github:shanchuan1/template-proxy-mosaic";
+  spinner_start("Creating Mosaic project ...");
+  await downgit(gitHubPath, destDir, { clone: false }, async (err) => {
+    if (err) {
+      rimraf(destDir, (error) => {
+        if (error) console.error(error);
+      });
+      spinner_fail("Mosaic project creation failed:", err);
+      process.exit(1);
+    }
+    // 根据重置映射表，在目标目录下进行重置操作
+    await renameDirectoriesSerially(`${destDir}/mosaic_project`, renamingMap);
+    spinner_succeed("Mosaic project created successfully");
+    process.exit(1);
+  });
+};
+
 module.exports = {
   checkDir,
   getFileContent,
@@ -135,4 +171,5 @@ module.exports = {
   copyDirContents,
   checkDirEmpty,
   copyTemplateContents,
+  getOriginTemplate,
 };
