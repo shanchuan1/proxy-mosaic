@@ -18,7 +18,6 @@ const processExecBuild = async (params) => {
     } = params;
     const { newResourceOutPutPath } = readFromJs("data");
     const repos = getHandleRepos(paths);
-    console.log("🚀 ~ processExecBuild ~ repos:", repos);
     let build_Mode;
     if (!mode) {
       const { build } = getScriptsForBuild(configBuildMode);

@@ -11,38 +11,36 @@ const { spinner_start, spinner_succeed } = processOra();
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
-    await spinner_succeed(`${repo.name} 的clone操作已执行完成`);
+    await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
   },
-  pull: async (repo, gitInstance) =>
+  pull: async (repo, gitInstance) =>{
     gitInstance.pull() &&
-    console.log(`Repository << ${repo.name} >> have already pulled the latest`),
+    console.log(`\n Repository << ${repo.name} >> have already pulled the latest`)
+    await spinner_succeed(`${repo.name} PULL operation has been completed`);
+  },
   checkout: async (repo, gitInstance) => {
     if ("branch" in repo) {
       gitInstance.checkout(repo.branch);
       console.log(
-        `Repository ${repo.url} has been checked out to branch ${repo.branch}.`
+        `\n Repository ${repo.name} has been checked out to branch ${repo.branch}.`
       );
+      await spinner_succeed(`${repo.name} CHECKOUT operation has been completed`);
       return;
     }
     console.warn(
-      `Repository ${repo.url} does not contain a branch property, skipping branch switch.`
+      `Repository ${repo.name} does not contain a branch property, skipping branch switch.`
     );
   },
 };
 
 // 处理git仓库操作
 const processRepositories = async (operation, paths, branch) => {
-  console.log("🚀 ~ operation:", operation);
   try {
     const repos = getHandleRepos(paths, branch);
-    console.log("🚀 ~ repos:", repos);
-    // return;
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
       const isDirEmpty = await checkDirEmpty(repo.dest);
-      console.log("🚀 ~ repos.map ~ isDirEmpty:", isDirEmpty);
-      console.log("🚀 ~ repos.map ~ isHasDir:", isHasDir);
 
       const gitInstance = Git(repo.dest);
 
@@ -55,9 +53,8 @@ const processRepositories = async (operation, paths, branch) => {
       if (isHasDir && !isDirEmpty && operation === "clone") {
         operation = "pull";
       }
-
       // TODO: 动画
-      await spinner_start(`${repo.name}正在执行git ${operation} 操作...`);
+      await spinner_start(`${repo.name}executing git ${operation.toUpperCase()} operation...`);
       // 克隆或拉取操作
       await OPERATION_FUNCTIONS[operation](repo, gitInstance).catch((err) => {
         console.error(
@@ -67,13 +64,6 @@ const processRepositories = async (operation, paths, branch) => {
         throw err;
       });
 
-      // 特殊处理分支切换成功的输出
-      if (operation === "checkout" && "branch" in repo) {
-        console.log(
-          `Repository ${repo.url} has been checked out to branch ${repo.branch}.`
-        );
-      }
-      
     }
   } catch (err) {
     console.log("err:", err);
@@ -82,7 +72,6 @@ const processRepositories = async (operation, paths, branch) => {
 
 // 获取仓库状态
 const getReposStatus = (options) => {
-  console.log("🚀 ~ getReposStatus ~ options:", options);
   // TODO：paths内容在repos内不存在需友好提示
   const repos = readFromJs("repos");
   const outputObj = {};

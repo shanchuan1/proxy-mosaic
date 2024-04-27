@@ -33,10 +33,7 @@ const actuatorEvents = {
     await processRepositories(OPERATIONS.CLONE, params.paths),
   build: async (params) => await processExecBuild(params),
   deploy: async (params) => await processExecDeploy(params),
-  checkout: async (params) => {
-    console.log('params', params);
-    await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch)
-  },
+  checkout: async (params) => await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
   'show_branch': async (params) => {
    const reposStatus = getReposStatus(params)
    console.log('The current status of the warehouse being queried', reposStatus)
@@ -48,7 +45,6 @@ const actuator = async (actOptions) => {
   console.log("🚀 ~ actuator ~ actOptions:", actOptions);
   if (isEmptyObject(actOptions)) return;
   const { key, value } = getFirstLevelKeyValue(actOptions);
-  console.log('🚀 ~ actuator ~ key, value:', key, value)
 
   try {
     await actuatorEvents[key](value);

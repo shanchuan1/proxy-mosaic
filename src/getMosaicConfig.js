@@ -12,7 +12,6 @@ const { validateRepos } = require("./utils");
 // },
 // ];
 
-
 /**
  * @description: 匹配得出仓库的数据结构
  * @param {*} paths 当前项目名称(name或者byName)
@@ -60,7 +59,7 @@ const getHandleRepos = (paths, branch) => {
  * @description: 校验命令传入的paths项目是否为配置文件内存在的
  * @param {*} projectNames  传入的项目名
  * @param {*} projectsList  配置文件内已配置的项目
- * @return {*} Boolean 
+ * @return {*} Boolean
  */
 const validatePaths = (projectNames, projectsList) => {
   const matchedNames = new Set();
@@ -91,8 +90,6 @@ const getReposPackageScripts = () => {
  */
 const getScriptsForBuild = (mode) => {
   const scripts = getReposPackageScripts();
-  console.log("🚀 ~ getScriptsForBuild ~ scripts:", scripts);
-  console.log("🚀 ~ getScriptsForBuild ~ mode:", mode);
 
   let buildMap = {};
   for (const key in scripts) {
@@ -107,7 +104,6 @@ const getScriptsForBuild = (mode) => {
       buildMap.build = mode;
     }
   }
-  console.log("buildMap", buildMap);
   return buildMap;
 };
 

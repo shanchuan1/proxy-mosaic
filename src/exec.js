@@ -41,7 +41,7 @@ const execProcess = async (command, options) => {
     });
     const { spinner_start, spinner_succeed } = processOra()
 
-    await spinner_start(`${repo.name}: 正在执行${command}操作...`)
+    await spinner_start(`${repo.name}: Executing${command}operation...`)
     const { stdout, stderr } = await exec(bashCommand);
 
     execLog(command, repo)(stdout);
@@ -49,10 +49,10 @@ const execProcess = async (command, options) => {
     if (stderr) {
       console.error(`Yarn install errors for ${repo.url}: ${stderr}`);
     }
-    await spinner_succeed(`${repo.name} 的${command}操作已执行完成`)
+    await spinner_succeed(`The ${repo.name} of ${command}operation has been completed`)
   } catch (error) {
     console.error(`Failed to run '${command}' in ${repo.url}:`, error);
-    throw error; // 可以选择抛出错误以便外部捕获并处理
+    throw error; 
   }
 };
 

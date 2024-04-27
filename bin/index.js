@@ -84,9 +84,10 @@ program
   .action(async (paths, options) => {
     if (!(options.config || options.add)) {
       // 默认要部署服务器，必需携带-c，或-a参数指定
-      return console.log(
+      console.log(
         `the server must be specified, You need to specify or configure a server through '-c' or '-a'`
       );
+      process.exit(0);
     }
     const res = await getInquirerOperation("deploy", options);
     getCommandParams("deploy", paths, { ...options, serverConfig: res });

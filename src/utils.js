@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-04-19 21:02:10
+ * @LastEditors: 
+ * @LastEditTime: 2024-04-27 12:24:02
+ */
 const fs = require("fs");
 const path = require("path");
 
@@ -47,7 +54,7 @@ const isValidIP = (ipAndPortString) => {
 const deleteFolderRecursive = async (folderPath) => {
   // 判断路径是否存在
   if (!fs.existsSync(folderPath)) {
-    console.error(`文件夹 ${folderPath} 不存在`);
+    console.error(`Folder ${folderPath} not exist`);
     return;
   }
 

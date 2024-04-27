@@ -15,15 +15,15 @@ const getLastFolderFromPath = (filePath) => {
 const checkDir = async (dirPath) => {
   try {
     await fsPromises.access(dirPath, fs.constants.F_OK | fs.constants.W_OK);
-    greenLog(`目录: << ${getLastFolderFromPath(dirPath)} >> 已存在`);
+    greenLog(`Directory: << ${getLastFolderFromPath(dirPath)} >> already exists`);
     return true;
   } catch (accessErr) {
     try {
       await fsPromises.mkdir(dirPath, { recursive: true });
-      greenLog(`目录:  << ${getLastFolderFromPath(dirPath)} >> 已成功创建`);
+      greenLog(`Directory:  << ${getLastFolderFromPath(dirPath)} >> created successfully `);
       return false;
     } catch (mkdirErr) {
-      console.error(`创建目录失败: ${mkdirErr}`);
+      console.error(`Failed to create directory: ${mkdirErr}`);
       return false;
     }
   }
@@ -64,7 +64,7 @@ const checkDirEmpty = async (dirPath) => {
     return files.length === 0;
   } catch (err) {
     // 如果目录不存在或读取目录时出错，也返回true表示认为该路径为空（可根据需求调整）
-    console.error(`检查目录是否为空时发生错误: ${err.message}`);
+    console.error(`Error checking if directory is empty: ${err.message}`);
     return true;
   }
 };
@@ -92,7 +92,7 @@ const copyTemplateContents = async (options) => {
 
     // 根据重置映射表，在目标目录下进行重置操作
     await renameDirectoriesSerially(outPutEdPath, renamingMap);
-    await spinner_succeed(`mosaic_project 工程已创建完成`);
+    await spinner_succeed(`mosaic_project project has been created and completed`);
     greenLog(`Templates resource << mosaic_project >> have been ready.`);
     process.exit(1);
   } catch (err) {
