@@ -101,6 +101,7 @@ const copyTemplateContents = async (options) => {
 
     // 根据重置映射表，在目标目录下进行重置操作
     await renameDirectoriesSerially(outPutEdPath, renamingMap);
+    appendToJs("currentMosaicProjectPath", outPutEdPath, "data");
     await spinner_succeed(
       `mosaic_project project has been created and completed`
     );
@@ -160,6 +161,7 @@ const getOriginTemplate = async ({
     }
     // 根据重置映射表，在目标目录下进行重置操作
     await renameDirectoriesSerially(`${destDir}/mosaic_project`, renamingMap);
+    appendToJs("currentMosaicProjectPath", `${destDir}/mosaic_project`, "data");
     spinner_succeed("Mosaic project created successfully");
     process.exit(1);
   });

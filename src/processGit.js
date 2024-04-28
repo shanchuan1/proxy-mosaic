@@ -4,9 +4,8 @@ const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
 const { readFromJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
-const { spinner_start, spinner_succeed } = processOra();
+const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 const chalk = require("chalk");
-
 
 // 定义对应的操作函数
 const OPERATION_FUNCTIONS = {
@@ -15,23 +14,39 @@ const OPERATION_FUNCTIONS = {
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
   },
-  pull: async (repo, gitInstance) =>{
+  pull: async (repo, gitInstance) => {
     gitInstance.pull() &&
-    console.log(`\n Repository << ${repo.name} >> have already pulled the latest`)
+      console.log(
+        `\n Repository << ${repo.name} >> have already pulled the latest`
+      );
     await spinner_succeed(`${repo.name} PULL operation has been completed`);
   },
   checkout: async (repo, gitInstance) => {
     if ("branch" in repo) {
-      gitInstance.checkout(repo.branch);
-      await spinner_succeed(`${chalk.blue(repo.name)} CHECKOUT operation has been completed, and it has been checked out to branch ${chalk.blue(repo.branch)}`);
-      if (repo.isLastRepo) {
+      try {
+        await gitInstance.checkout([repo.branch]);
+        await spinner_succeed(
+          `${chalk.blue(
+            repo.name
+          )} CHECKOUT operation has been completed, and it has been checked out to branch ${chalk.blue(
+            repo.branch
+          )}`
+        );
+        if (repo.isLastRepo) {
+          process.exit(1);
+        }
+      } catch (err) {
+        spinner_fail(
+          `Error ${chalk.blue(
+            repo.name
+          )} switching branches of the ${chalk.blue(repo.branch)} :${err}`
+        );
         process.exit(1);
       }
-      return;
     }
-    console.warn(
-      `Repository ${repo.name} does not contain a branch property, skipping branch switch.`
-    );
+    // console.warn(
+    //   `Repository ${repo.name} does not contain a branch property, skipping branch switch.`
+    // );
   },
 };
 
@@ -55,7 +70,9 @@ const processRepositories = async (operation, paths, branch) => {
         operation = "pull";
       }
       // TODO: 动画
-      await spinner_start(`${repo.name}executing git ${operation.toUpperCase()} operation...`);
+      await spinner_start(
+        `${repo.name} executing git ${operation.toUpperCase()} operation...\n`
+      );
       // 克隆或拉取操作
       await OPERATION_FUNCTIONS[operation](repo, gitInstance).catch((err) => {
         console.error(
@@ -64,33 +81,49 @@ const processRepositories = async (operation, paths, branch) => {
         );
         throw err;
       });
-
     }
   } catch (err) {
     console.log("err:", err);
+    process.exit(1);
   }
 };
 
 // 获取仓库状态
-const getReposStatus = (options) => {
-  // TODO：paths内容在repos内不存在需友好提示
+const getReposStatus = async (options) => {
   const repos = readFromJs("repos");
   const outputObj = {};
   for (const key in repos) {
     const item = repos[key];
-    outputObj[key] = item.branch || "master";
-  }
-  if (options.paths[0] === "all") {
-    return outputObj;
-  } else {
-    let obj = {};
-    options.paths.forEach((v) => {
-      const key = findMatchedKey(v, repos);
-      obj = {
-        [key]: outputObj[key],
-      };
-    });
-    return obj;
+    const gitInstance = Git(item.dest);
+    await gitInstance
+      .branch(["-v", "--verbose"])
+      .then((branches) => {
+        outputObj[key] = {};
+        outputObj[key].all = branches.all;
+        outputObj[key].current = branches.current;
+        if (options.paths[0] === "all" && item.isLastRepo) {
+          console.log(
+            "The current status of the repos being queried\n",
+            outputObj
+          );
+          process.exit(1);
+        } else {
+          let obj = {};
+          options.paths.forEach((v) => {
+            const key = findMatchedKey(v, repos);
+            obj = {
+              [key]: outputObj[key],
+            };
+          });
+          if (item.isLastRepo) {
+            console.log("The current status of the repos being queried\n", obj);
+            process.exit(1);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching branch information:", err);
+      });
   }
 };
 

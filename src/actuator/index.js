@@ -41,13 +41,7 @@ const actuatorEvents = {
   deploy: async (params) => await processExecDeploy(params),
   checkout: async (params) =>
     await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
-  show_branch: async (params) => {
-    const reposStatus = getReposStatus(params);
-    console.log(
-      "The current status of the warehouse being queried",
-      reposStatus
-    );
-  },
+  show_branch: async (params) => await getReposStatus(params),
 };
 
 // 统一执行器
@@ -58,7 +52,8 @@ const actuator = async (actOptions) => {
   try {
     await actuatorEvents[key](value);
   } catch (error) {
-    console.log("🚀 ~ actuator ~ error:", error);
+    console.log("actuator -- error:", error);
+    process.exit(1);
   }
 };
 

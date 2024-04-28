@@ -56,7 +56,10 @@ const processExecBuild = async (params) => {
       await checkDir(inputPath);
       await copyDirContents(outputPath, inputPath);
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log('processExecBuild -- error:', error)
+    process.exit(1);
+  }
 };
 
 module.exports = {

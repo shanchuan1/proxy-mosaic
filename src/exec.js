@@ -1,23 +1,25 @@
 const { greenLog } = require("./terminalLog");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-const { processOra } = require('./actuator/ora')
+const { processOra } = require("./actuator/ora");
+const { spinner_start, spinner_succeed } = processOra();
 
 global.DEFAULT_PACKAGE_MANAGER = "yarn";
 
 const packManager = {
   yarn: {
     INSTALL: ({ repo }) => `cd ${repo.dest} && yarn`,
-    BUILD: ({ repo, build_Mode }) => `cd ${repo.dest} && yarn ${build_Mode}`,
+    // BUILD: ({ repo, build_Mode }) => `cd ${repo.dest} && yarn ${build_Mode}`,
+    BUILD: ({ repo, build_Mode }) => `yarn --cwd "${repo.dest}" ${build_Mode}`,
   },
   npm: {
     INSTALL: ({ repo }) => `cd ${repo.dest} && npm run install`,
-    BUILD: ({ repo, build_Mode }) => `cd ${repo.dest} && npm run ${build_Mode}`,
+    BUILD: ({ repo, build_Mode }) => `npm run --cwd "${repo.dest}" ${build_Mode}`,
   },
   pnpm: {
     INSTALL: ({ repo }) => `cd ${repo.dest} && pnpm install`,
     BUILD: ({ repo, build_Mode }) =>
-      `cd ${repo.dest} && pnpm run ${build_Mode}`,
+      `pnpm run --cwd "${repo.dest}" ${build_Mode}`,
   },
 };
 
@@ -39,23 +41,29 @@ const execProcess = async (command, options) => {
       repo,
       build_Mode,
     });
-    const { spinner_start, spinner_succeed } = processOra()
 
-    await spinner_start(`${repo.name}: Executing ${command === 'BUILD'? build_Mode : command} operation...`)
+    await spinner_start(
+      `${repo.name}: Executing ${
+        command === "BUILD" ? build_Mode : command
+      } operation...\n`
+    );
     const { stdout, stderr } = await exec(bashCommand);
-
     execLog(command, repo)(stdout);
 
     if (stderr) {
-      console.error(`Yarn install errors for ${repo.url}: ${stderr}`);
+      console.error(`An error occurred for ${repo.url}: ${stderr}`);
     }
-    await spinner_succeed(`The ${repo.name} of ${build_Mode} operation has been completed`)
+    await spinner_succeed(
+      `The ${repo.name} of ${
+        command === "BUILD" ? build_Mode : command
+      } operation has been completed`
+    );
     if (repo.isLastRepo) {
       process.exit(1);
     }
   } catch (error) {
-    console.error(`Failed to run '${command}' in ${repo.url}:`, error);
-    throw error; 
+    console.log(' execProcess -- error:', error)
+    process.exit(1);
   }
 };
 

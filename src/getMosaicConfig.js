@@ -1,17 +1,6 @@
 const { readFromJs, appendToJs } = require("./temp/index");
 const { validateRepos } = require("./utils");
 
-// example:
-// const repos = [
-// {
-//   url: "git@git.timevale.cn:public_health/esign-certification-h5.git",
-//   dest: `${newProjectPath}/esign-certification-h5`,
-//   name: 'esign-certification-h5'
-//   byName: 'h5',
-//   branch: 'master',
-// },
-// ];
-
 /**
  * @description: 匹配得出仓库的数据结构
  * @param {*} paths 当前项目名称(name或者byName)
@@ -19,15 +8,15 @@ const { validateRepos } = require("./utils");
  * @return {*} arrayRepos
  */
 const getHandleRepos = (paths, branch) => {
-  const mosaicConfig = require(`${process.cwd()}/mosaic_project/mosaic.config.js`);
+  const { newProjectPath, currentMosaicProjectPath } = readFromJs("data");
+  const mosaicConfig = require(`${currentMosaicProjectPath}\\mosaic.config.js`);
   // repos的校验
   validateRepos(mosaicConfig.repos);
-  const { newProjectPath } = readFromJs("data");
   const arrayRepos = mosaicConfig.repos
     .map((v, index) => {
       const item = {
         ...v,
-        dest: `${newProjectPath}/${v.name}`,
+        dest: `${newProjectPath}\\${v.name}`,
         byName: v.name.split("-")[v.name.split("-").length - 1],
       };
       if (index === mosaicConfig.repos.length - 1) {

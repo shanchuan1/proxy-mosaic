@@ -1,12 +1,12 @@
 {
   "name": "proxy-mosaic",
   "version": "1.0.0",
-  "description": "",
+  "description": "🛠️ One click (start, package, deploy) proxy tool for front-end application groups",
   "bin": {
     "mosaic": "bin/index.js"
   },
   "scripts": {
-    "clear": "rm -rf ./hospital/*"
+    "clear": "rimraf "
   },
   "author": {
     "name": "shanchuan",

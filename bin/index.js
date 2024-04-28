@@ -104,7 +104,6 @@ program
   .arguments("[projects...]", "The list of projects to show branches for")
   .description("show a branch in your project powered by proxy-mosaic")
   .action((projects) => {
-    console.log("🚀 ~ .action ~ projects:", projects);
     getCommandParams("show_branch", projects, {});
   });
 
