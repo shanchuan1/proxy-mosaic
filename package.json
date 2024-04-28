@@ -1,6 +1,6 @@
 {
   "name": "proxy-mosaic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🛠️ One click (start, package, deploy) proxy tool for front-end application groups",
   "bin": {
     "mosaic": "bin/index.js"
