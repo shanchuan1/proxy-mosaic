@@ -41,7 +41,7 @@ const execProcess = async (command, options) => {
     });
     const { spinner_start, spinner_succeed } = processOra()
 
-    await spinner_start(`${repo.name}: Executing ${build_Mode} operation...`)
+    await spinner_start(`${repo.name}: Executing ${command === 'BUILD'? build_Mode : command} operation...`)
     const { stdout, stderr } = await exec(bashCommand);
 
     execLog(command, repo)(stdout);

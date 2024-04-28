@@ -52,7 +52,6 @@ const actuatorEvents = {
 
 // 统一执行器
 const actuator = async (actOptions) => {
-  console.log("🚀 ~ actuator ~ actOptions:", actOptions);
   if (isEmptyObject(actOptions)) return;
   const { key, value } = getFirstLevelKeyValue(actOptions);
 

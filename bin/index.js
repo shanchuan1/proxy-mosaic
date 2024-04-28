@@ -120,9 +120,6 @@ const getInquirerOperation = async (type, options) => {
 
 // 通用获取命令参数
 const getCommandParams = (type, paths, options) => {
-  console.log("🚀 ~ getCommandParams ~ options:", options);
-  console.log("🚀 ~ getCommandParams ~ paths:", paths);
-  console.log("🚀 ~ getCommandParams ~ type:", type);
 
   if (!paths.length) {
     paths = ["all"];

@@ -2,11 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const fse = require("fs-extra");
 const fsPromises = fs.promises;
+const downgit = require("download-git-repo");
+const rimraf = require("rimraf");
 const { greenLog } = require("./terminalLog");
 const { appendToJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
-const downgit = require("download-git-repo");
-const rimraf = require("rimraf");
 
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
@@ -139,6 +139,7 @@ const renameDirectoriesSerially = async (dir, renamingMap) => {
   }
 };
 
+// 从远程仓库下载模板
 const getOriginTemplate = async ({
   currentLocalPathCWD: destDir,
   projectName = "front",
