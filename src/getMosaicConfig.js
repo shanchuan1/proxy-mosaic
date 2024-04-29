@@ -33,7 +33,7 @@ const getHandleRepos = (paths, branch) => {
         return paths.includes(v.name) || paths.includes(v.byName);
       }
       return v;
-    });
+    })
   if (paths.length > arrayRepos.length) {
     // 说明存在还有未匹配到的项目, 输出未匹配上的appName
     const unmatchedProjectNames = validatePaths(paths, arrayRepos);

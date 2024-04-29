@@ -15,7 +15,7 @@ const getLastFolderFromPath = (filePath) => {
   return path.basename(filePath);
 };
 
-// 检查目录是否存在
+// 检查目录是否存在并创建
 const checkDir = async (dirPath) => {
   try {
     await fsPromises.access(dirPath, fs.constants.F_OK | fs.constants.W_OK);
@@ -87,8 +87,6 @@ const copyTemplateContents = async (options) => {
     projectName = "front",
   } = options;
   try {
-    // TODO: 后期考虑远程仓库版本优化此本地创建模式
-    // await spinner_start(`正在创建${projectName}工程`);
     // 首先将模板目录下的所有内容拷贝到目标目录
     await fse.copy(srcDir, destDir, { overwrite: true });
 

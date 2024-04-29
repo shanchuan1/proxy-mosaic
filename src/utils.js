@@ -1,9 +1,9 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
- * @LastEditors: 
- * @LastEditTime: 2024-04-27 12:24:02
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-04-29 10:50:09
  */
 const fs = require("fs");
 const path = require("path");
@@ -80,9 +80,20 @@ const isEmptyObject = (obj) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 
+// 给数组对象最后一项设置属性
+const setPropertyInLast = (array, property) => {
+  return array.map((v, i) => {
+    if (i === array.length - 1 && !v.hasOwnProperty(property)) {
+      v[property] = true;
+    }
+    return v;
+  });
+};
+
 module.exports = {
   validateRepos,
   validateServerConfig,
   deleteFolderRecursive,
-  isEmptyObject
+  isEmptyObject,
+  setPropertyInLast
 };

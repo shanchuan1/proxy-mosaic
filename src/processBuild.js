@@ -1,4 +1,11 @@
-const path = require("path");
+/*
+ * @Description: 优化打包性能
+ * @Author: shanchuan
+ * @Date: 2024-04-22 14:37:43
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-04-29 18:04:04
+ */
+const chalk = require("chalk");
 const { getHandleRepos, getScriptsForBuild } = require("./getMosaicConfig");
 const { readFromJs, appendToJs } = require("./temp/index");
 const { execProcess } = require("./exec");
@@ -8,8 +15,8 @@ const {
   doesFileExist,
   copyDirContents,
 } = require("./processFile");
+const { setPropertyInLast } = require("./utils");
 const { processOra } = require("./actuator/ora");
-const chalk = require("chalk");
 const { spinner_fail } = processOra();
 
 /* 模拟build操作 */
@@ -20,7 +27,10 @@ const processExecBuild = async (params) => {
       options: { configBuildMode, mode },
     } = params;
     const { newResourceOutPutPath } = readFromJs("data");
-    const repos = getHandleRepos(paths);
+    let repos = [];
+    if (paths.length > 0) {
+      repos = setPropertyInLast(getHandleRepos(paths), "isLastRepo");
+    }
     let build_Mode;
     if (!mode) {
       const { build } = getScriptsForBuild(configBuildMode);
@@ -47,17 +57,20 @@ const processExecBuild = async (params) => {
       const outputPath = `${repo.dest}/${content.outputDir}`;
       const inputPath =
         content.outputDir === "dist"
-          ? `${newResourceOutPutPath}/${repo.name}`
-          : `${newResourceOutPutPath}/${content.outputDir}`;
+          ? `${newResourceOutPutPath}\\${repo.name}`
+          : `${newResourceOutPutPath}\\${content.outputDir}`;
       appendToJs(repo.name, inputPath, "data");
 
       // TODO: 后面考虑要不要保留这一层校验
       await checkDir(newResourceOutPutPath);
       await checkDir(inputPath);
       await copyDirContents(outputPath, inputPath);
+      if (repo.isLastRepo) {
+        process.exit(1);
+      }
     }
   } catch (error) {
-    console.log('processExecBuild -- error:', error)
+    console.log("processExecBuild -- error:", error);
     process.exit(1);
   }
 };

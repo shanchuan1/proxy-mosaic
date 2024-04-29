@@ -58,9 +58,6 @@ const execProcess = async (command, options) => {
         command === "BUILD" ? build_Mode : command
       } operation has been completed`
     );
-    if (repo.isLastRepo) {
-      process.exit(1);
-    }
   } catch (error) {
     console.log(' execProcess -- error:', error)
     process.exit(1);

@@ -6,6 +6,7 @@ const chooseBuildModePrompt = {
   message: "select a build mode that you want",
   name: "buildMode",
   choices: ["dev", "test", "sml", "prod"],
+  // 目前模式会覆盖此命名写法
   // choices: [
   //   "dev ===> build:dev || build_dev",
   //   "test ===> build:test || build:test",
@@ -108,7 +109,38 @@ const deployInquirer = (options) => {
   });
 };
 
+const cleanAppList = {
+  type: "list",
+  message: "select a app that you need to delete",
+  name: "app",
+  choices: [],
+};
+const cleanInquirer = (options) => {
+  const repos = readFromJs("repos");
+  let promptList = [];
+  if (options.config) {
+    cleanAppList.choices = Object.keys(repos);
+    if (Object.keys(repos).length > 0) {
+      promptList = [cleanAppList];
+    } else {
+      console.log(
+        "There is currently no app configuration. Please execute mosaic clone script."
+      );
+      process.exit(1);
+    }
+  }
+  return new Promise((resolve, reject) => {
+    inquirer
+      .prompt(promptList)
+      .then((answers) => {
+        resolve(answers.app);
+      })
+      .catch(reject);
+  });
+};
+
 module.exports = {
   buildInquirer,
   deployInquirer,
+  cleanInquirer,
 };

@@ -3,7 +3,7 @@ const { Command } = require("commander");
 const packageJson = require("../package.json");
 const minimist = require("minimist");
 const path = require("path");
-const { buildInquirer, deployInquirer } = require("../src/actuator/inquirer");
+const { buildInquirer, deployInquirer, cleanInquirer } = require("../src/actuator/inquirer");
 const { actuator, checkNodeVersion } = require("../src/actuator/index");
 
 // const leven = require('leven')
@@ -94,6 +94,15 @@ program
   });
 
 program
+  .command("clean [paths...]")
+  .description("deploy a new project resource powered by proxy-mosaic")
+  .option("-c, --config ", "configs for the server")
+  .action(async (paths, options) => {
+    const res = await getInquirerOperation("clean", options);
+    getCommandParams("clean", paths, { ...options, cleanConfig: res });
+  });
+
+program
   .command("checkout <branch> [projects...]")
   .description("checkout a branch in your project powered by proxy-mosaic")
   .action((branch, projects) => getCommandParams("checkout", projects, branch));
@@ -109,12 +118,12 @@ program
 
 // 获取特定的交互
 const getInquirerOperation = async (type, options) => {
-  if (type === "build") {
-    return await buildInquirer(options);
+  const operationMap ={
+    build: async (options) => await buildInquirer(options),
+    deploy: async (options) => await deployInquirer(options),
+    clean: async (options) => await cleanInquirer(options),
   }
-  if (type === "deploy") {
-    return await deployInquirer(options);
-  }
+  return operationMap[type](options)
 };
 
 // 通用获取命令参数

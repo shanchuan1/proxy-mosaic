@@ -8,6 +8,7 @@ const { processRepositories, getReposStatus } = require("../processGit");
 const { OPERATIONS } = require("../constant");
 const { processExecBuild } = require("../processBuild");
 const { processExecDeploy } = require("../processDeploy");
+const { processExecClean } = require("../processClean");
 const { isEmptyObject } = require("../utils");
 
 // 校验node执行版本
@@ -42,6 +43,7 @@ const actuatorEvents = {
   checkout: async (params) =>
     await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
   show_branch: async (params) => await getReposStatus(params),
+  clean: async (params) => await processExecClean(params),
 };
 
 // 统一执行器
