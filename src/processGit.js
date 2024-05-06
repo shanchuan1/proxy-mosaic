@@ -1,11 +1,12 @@
 const Git = require("simple-git");
+const chalk = require("chalk");
 const { getHandleRepos } = require("./getMosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
 const { readFromJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
+const { setPropertyInLast } = require("./utils");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
-const chalk = require("chalk");
 
 // 定义对应的操作函数
 const OPERATION_FUNCTIONS = {
@@ -13,6 +14,9 @@ const OPERATION_FUNCTIONS = {
     await gitInstance.clone(repo.url, repo.dest);
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
+    if (repo.isLastRepo) {
+      process.exit(1);
+    }
   },
   pull: async (repo, gitInstance) => {
     gitInstance.pull() &&
@@ -53,7 +57,7 @@ const OPERATION_FUNCTIONS = {
 // 处理git仓库操作
 const processRepositories = async (operation, paths, branch) => {
   try {
-    const repos = getHandleRepos(paths, branch);
+    const repos = setPropertyInLast(getHandleRepos(paths, branch), "isLastRepo");
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
       const isDirEmpty = await checkDirEmpty(repo.dest);

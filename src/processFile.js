@@ -173,4 +173,5 @@ module.exports = {
   checkDirEmpty,
   copyTemplateContents,
   getOriginTemplate,
+  getLastFolderFromPath
 };

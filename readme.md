@@ -45,6 +45,11 @@ mosaic build -p    // --pro pro模式
 mosaic deploy // 默认即为 mosaic deploy all   ===>  部署全部应用
 mosaic deploy  '[appName...]' // 指定部署的app
 mosaic deploy '[appName...]' -c //选择所需部署的服务器
+
+
+// 清除
+mosaic clean -c //指定清除的app
+mosaic clean // 清除全部app
 ```
 
 
