@@ -1,5 +1,5 @@
 const { readFromJs, appendToJs } = require("./temp/index");
-const { validateRepos, mergeObjectsByKeys } = require("./utils");
+const { validateRepos, mergedObjectNewReposToTemp } = require("./utils");
 
 /**
  * @description: 匹配得出仓库的数据结构
@@ -112,7 +112,7 @@ const validateFrame = () => {
     scriptsMap[key] = {
       'pureNative': 'html'
     }
-    const dependencies = require(`${repos[key].dest}/package.json`).dependencies || {};
+    const dependencies = require(`${repos[key].dest}\\package.json`).dependencies || {};
     for (const depName in dependencies) {
       if (frames.includes(depName)) {
         scriptsMap[key] = {
@@ -123,10 +123,11 @@ const validateFrame = () => {
       } 
     }
   }
-  const mergedObject = mergeObjectsByKeys(scriptsMap, repos)
-  for (const key in mergedObject) {
-    appendToJs(key, mergedObject[key], "repos");
-  }
+  mergedObjectNewReposToTemp(scriptsMap, repos)
+  // const mergedObject = mergeObjectsByKeys(scriptsMap, repos)
+  // for (const key in mergedObject) {
+  //   appendToJs(key, mergedObject[key], "repos");
+  // }
 }
 
 module.exports = {

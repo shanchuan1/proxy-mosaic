@@ -3,10 +3,12 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-08 15:40:51
+ * @LastEditTime: 2024-05-08 18:53:58
  */
 const fs = require("fs");
 const path = require("path");
+const { appendToJs } = require("./temp/index");
+
 
 // mosaic配置项repos的校验
 const validateRepos = (repos) => {
@@ -117,11 +119,20 @@ const mergeObjectsByKeys = (obj1, obj2) => {
   return mergedObject;
 }
 
+
+// 合并仓库新状态
+const mergedObjectNewReposToTemp = (leftObj, rightObj) => {
+  const mergedObject = mergeObjectsByKeys(leftObj, rightObj)
+  for (const key in mergedObject) {
+    appendToJs(key, mergedObject[key], "repos");
+  }
+}
+
 module.exports = {
   validateRepos,
   validateServerConfig,
   deleteFolderRecursive,
   isEmptyObject,
   setPropertyInLast,
-  mergeObjectsByKeys
+  mergedObjectNewReposToTemp
 };

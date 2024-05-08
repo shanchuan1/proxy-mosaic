@@ -5,7 +5,7 @@ const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
 const { readFromJs, appendToJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
-const { setPropertyInLast } = require("./utils");
+const { setPropertyInLast, mergedObjectNewReposToTemp } = require("./utils");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
 
@@ -13,10 +13,10 @@ const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
-    validateFrame() // 校验app使用的框架
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
     if (repo.isLastRepo) {
+      validateFrame() // 校验所有app使用的框架
       process.exit(1);
     }
   },
@@ -158,17 +158,25 @@ const getCurrentBranch = async (options, repos) => {
         outputObj[key].all = branches.all;
         outputObj[key].current = branches.current;
         if (options.paths[0] === "all" && item.isLastRepo) {
-          for (const key in outputObj) {
-            appendToJs(key, outputObj[key], "branch");
-          }
+          // for (const key in outputObj) {
+          //   appendToJs(key, outputObj[key], "branch");
+          // }
           allReposBranches = outputObj;
+          let allReposBranchesObject = {}
+          for (const key in allReposBranches) {
+            allReposBranchesObject[key] = {
+              branches: allReposBranches[key]
+            }
+          }
+          console.log('🚀 ~ Object.entries ~ allReposBranchesObject:', allReposBranchesObject)
+          mergedObjectNewReposToTemp(allReposBranchesObject,repos)
           // return outputObj;
         } else {
           let obj = {};
           options.paths.forEach((v) => {
             const key = findMatchedKey(v, repos);
             obj[key] = outputObj[key];
-            appendToJs(key, obj[key], "branch");
+            // appendToJs(key, obj[key], "branch");
           });
           if (item.isLastRepo) {
             specifyReposBranches = obj;

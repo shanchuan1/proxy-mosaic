@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-08 16:23:14
+ * @LastEditTime: 2024-05-08 18:02:34
  */
 const chalk = require("chalk");
 const { getHandleRepos, getScriptsForBuild } = require("./getMosaicConfig");
@@ -29,7 +29,9 @@ const processExecBuild = async (params) => {
     const { newResourceOutPutPath } = readFromJs("data");
     let repos = [];
     if (paths.length > 0) {
-      repos = setPropertyInLast(getHandleRepos(paths), "isLastRepo");
+      // repos = setPropertyInLast(getHandleRepos(paths), "isLastRepo");
+      const tempRepos = readFromJs("repos")
+      repos = setPropertyInLast(Object.values(tempRepos), "isLastRepo");
     }
     let build_Mode;
     if (!mode) {
