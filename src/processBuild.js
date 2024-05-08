@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-08 18:02:34
+ * @LastEditTime: 2024-05-08 22:56:33
  */
 const chalk = require("chalk");
 const { getHandleRepos, getScriptsForBuild } = require("./getMosaicConfig");
@@ -15,7 +15,7 @@ const {
   doesFileExist,
   copyDirContents,
 } = require("./processFile");
-const { setPropertyInLast } = require("./utils");
+const { setPropertyInLast, setBuildPropertyInRepos } = require("./utils");
 const { processOra } = require("./actuator/ora");
 const { spinner_fail } = processOra();
 
@@ -30,8 +30,12 @@ const processExecBuild = async (params) => {
     let repos = [];
     if (paths.length > 0) {
       // repos = setPropertyInLast(getHandleRepos(paths), "isLastRepo");
-      const tempRepos = readFromJs("repos")
-      repos = setPropertyInLast(Object.values(tempRepos), "isLastRepo");
+      const tempRepos = readFromJs("repos");
+      const hasSetLastRepos = setPropertyInLast(
+        Object.values(tempRepos),
+        "isLastRepo"
+      );
+      repos = setBuildPropertyInRepos(hasSetLastRepos, "build", false);
     }
     let build_Mode;
     if (!mode) {
@@ -52,7 +56,19 @@ const processExecBuild = async (params) => {
 
     // 循环执行build
     for (const repo of repos) {
+      // 仅对未打包过的app打包
+      // if (!repo.build.hasBuilded) {
+      //   await execProcess("BUILD", { repo, build_Mode });
+      //   const hasBuildSuccess = setBuildPropertyInRepos(repo, "build", true);
+      //   console.log(
+      //     "🚀 ~ processExecBuild ~ hasBuildSuccess:",
+      //     hasBuildSuccess
+      //   );
+      //   appendToJs(hasBuildSuccess.name, hasBuildSuccess, "repos");
+      // }
+
       await execProcess("BUILD", { repo, build_Mode });
+
       // TODO:目前默认是识别vue项目的配置
       let content = {};
       let outputPath = null;

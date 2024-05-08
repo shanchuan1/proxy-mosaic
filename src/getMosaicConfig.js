@@ -124,10 +124,6 @@ const validateFrame = () => {
     }
   }
   mergedObjectNewReposToTemp(scriptsMap, repos)
-  // const mergedObject = mergeObjectsByKeys(scriptsMap, repos)
-  // for (const key in mergedObject) {
-  //   appendToJs(key, mergedObject[key], "repos");
-  // }
 }
 
 module.exports = {

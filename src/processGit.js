@@ -3,11 +3,10 @@ const chalk = require("chalk");
 const { getHandleRepos, validateFrame } = require("./getMosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
-const { readFromJs, appendToJs } = require("./temp/index");
+const { readFromJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
 const { setPropertyInLast, mergedObjectNewReposToTemp } = require("./utils");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
-
 
 // 定义GIT对应的操作事件
 const OPERATION_FUNCTIONS = {
@@ -16,7 +15,7 @@ const OPERATION_FUNCTIONS = {
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
     if (repo.isLastRepo) {
-      validateFrame() // 校验所有app使用的框架
+      validateFrame(); // 校验所有app使用的框架
       process.exit(1);
     }
   },
@@ -41,9 +40,6 @@ const OPERATION_FUNCTIONS = {
             repo.branch
           )}`
         );
-        if (repo.isLastRepo) {
-          process.exit(1);
-        }
       } catch (err) {
         spinner_fail(
           `Error ${chalk.blue(
@@ -53,6 +49,7 @@ const OPERATION_FUNCTIONS = {
         process.exit(1);
       }
     }
+    // TODO: 保留后续优化
     // console.warn(
     //   `Repository ${repo.name} does not contain a branch property, skipping branch switch.`
     // );
@@ -68,10 +65,21 @@ const OPERATION_FUNCTIONS = {
  */
 const processRepositories = async (operation, paths, branch) => {
   try {
-    const repos = setPropertyInLast(
-      getHandleRepos(paths, branch),
-      "isLastRepo"
-    );
+    let getRepos = [];
+    if (operation === "clone") {
+      getRepos = getHandleRepos(paths, branch);
+    } else {
+      const tempRepos = readFromJs("repos");
+      getRepos = Object.values(tempRepos)
+        .map((v) => ({ ...v, branch }))
+        .filter((v) => {
+          if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
+            return paths.includes(v.name) || paths.includes(v.byName);
+          }
+          return v;
+        });
+    }
+    const repos = setPropertyInLast(getRepos, "isLastRepo");
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
       const isDirEmpty = await checkDirEmpty(repo.dest);
@@ -100,13 +108,16 @@ const processRepositories = async (operation, paths, branch) => {
         throw err;
       });
     }
+    // checkout完成统一添加仓库分支状态
+    if (operation === "checkout") {
+      await getReposStatus({ paths: ["all"] }, false);
+      process.exit(1);
+    }
   } catch (err) {
     console.log("err:", err);
     process.exit(1);
   }
 };
-
-
 
 let allReposBranches = null;
 let specifyReposBranches = null;
@@ -131,7 +142,6 @@ const getReposStatus = async (options, isLog = true) => {
     process.exit(1);
   }
 };
-
 
 /**
  * @description: 获取当前分支状态
@@ -158,28 +168,32 @@ const getCurrentBranch = async (options, repos) => {
         outputObj[key].all = branches.all;
         outputObj[key].current = branches.current;
         if (options.paths[0] === "all" && item.isLastRepo) {
-          // for (const key in outputObj) {
-          //   appendToJs(key, outputObj[key], "branch");
-          // }
           allReposBranches = outputObj;
-          let allReposBranchesObject = {}
+          let allReposBranchesObject = {};
           for (const key in allReposBranches) {
             allReposBranchesObject[key] = {
-              branches: allReposBranches[key]
-            }
+              branches: allReposBranches[key],
+            };
           }
-          console.log('🚀 ~ Object.entries ~ allReposBranchesObject:', allReposBranchesObject)
-          mergedObjectNewReposToTemp(allReposBranchesObject,repos)
+          mergedObjectNewReposToTemp(allReposBranchesObject, repos);
+          // TODO: 保留后续优化
           // return outputObj;
         } else {
           let obj = {};
           options.paths.forEach((v) => {
             const key = findMatchedKey(v, repos);
             obj[key] = outputObj[key];
-            // appendToJs(key, obj[key], "branch");
           });
           if (item.isLastRepo) {
             specifyReposBranches = obj;
+            let specifyReposBranchesObject = {};
+            for (const key in specifyReposBranches) {
+              specifyReposBranchesObject[key] = {
+                branches: specifyReposBranches[key],
+              };
+            }
+            mergedObjectNewReposToTemp(specifyReposBranchesObject, repos);
+            // TODO: 保留后续优化
             // return obj;
           }
         }
@@ -204,7 +218,6 @@ const findMatchedKey = (targetValue, obj) => {
   return null; // 如果没有找到匹配项，返回null
 };
 
-
 /**
  * @description: 校验当前分支是否统一
  * @return {*} referenceValue 分支别名
@@ -224,8 +237,6 @@ const checkCurrentConsistency = async () => {
 
   return referenceValue.split("/").join("_");
 };
-
-
 
 module.exports = {
   processRepositories,

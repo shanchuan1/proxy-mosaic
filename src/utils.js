@@ -3,12 +3,11 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-08 18:53:58
+ * @LastEditTime: 2024-05-08 22:51:20
  */
 const fs = require("fs");
 const path = require("path");
 const { appendToJs } = require("./temp/index");
-
 
 // mosaic配置项repos的校验
 const validateRepos = (repos) => {
@@ -92,6 +91,27 @@ const setPropertyInLast = (array, property) => {
   });
 };
 
+// 给数组对象设置build属性
+const setBuildPropertyInRepos = (array, property, hasBuild) => {
+  if (Array.isArray(array)) {
+    return array.map((v) => {
+      if (!v.hasOwnProperty(property)) {
+        v[property] = {
+          current: v.branch,
+          hasBuilded: hasBuild,
+        };
+      }
+      return v;
+    });
+  } else {
+    array[property] = {
+      current: array.branch,
+      hasBuilded: hasBuild,
+    };
+    return array
+  }
+};
+
 // 合并两个对象相同key的值
 const mergeObjectsByKeys = (obj1, obj2) => {
   const mergedObject = {};
@@ -99,8 +119,8 @@ const mergeObjectsByKeys = (obj1, obj2) => {
     if (obj1.hasOwnProperty(key)) {
       if (obj2.hasOwnProperty(key)) {
         mergedObject[key] = {
-          ...obj2[key], 
-          ...obj1[key], 
+          ...obj2[key],
+          ...obj1[key],
         };
       } else {
         mergedObject[key] = obj1[key];
@@ -117,16 +137,15 @@ const mergeObjectsByKeys = (obj1, obj2) => {
   }
 
   return mergedObject;
-}
-
+};
 
 // 合并仓库新状态
 const mergedObjectNewReposToTemp = (leftObj, rightObj) => {
-  const mergedObject = mergeObjectsByKeys(leftObj, rightObj)
+  const mergedObject = mergeObjectsByKeys(leftObj, rightObj);
   for (const key in mergedObject) {
     appendToJs(key, mergedObject[key], "repos");
   }
-}
+};
 
 module.exports = {
   validateRepos,
@@ -134,5 +153,6 @@ module.exports = {
   deleteFolderRecursive,
   isEmptyObject,
   setPropertyInLast,
-  mergedObjectNewReposToTemp
+  mergedObjectNewReposToTemp,
+  setBuildPropertyInRepos,
 };
