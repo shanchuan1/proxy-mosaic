@@ -1,17 +1,19 @@
 const Git = require("simple-git");
 const chalk = require("chalk");
-const { getHandleRepos } = require("./getMosaicConfig");
+const { getHandleRepos, validateFrame } = require("./getMosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
-const { readFromJs } = require("./temp/index");
+const { readFromJs, appendToJs } = require("./temp/index");
 const { processOra } = require("./actuator/ora");
 const { setPropertyInLast } = require("./utils");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
-// 定义对应的操作函数
+
+// 定义GIT对应的操作事件
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
+    validateFrame() // 校验app使用的框架
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
     if (repo.isLastRepo) {
@@ -24,6 +26,9 @@ const OPERATION_FUNCTIONS = {
         `\n Repository << ${repo.name} >> have already pulled the latest`
       );
     await spinner_succeed(`${repo.name} PULL operation has been completed`);
+    if (repo.isLastRepo) {
+      process.exit(0);
+    }
   },
   checkout: async (repo, gitInstance) => {
     if ("branch" in repo) {
@@ -54,10 +59,19 @@ const OPERATION_FUNCTIONS = {
   },
 };
 
-// 处理git仓库操作
+/**
+ * @description: 统一处理git仓库操作
+ * @param {*} operation
+ * @param {*} paths
+ * @param {*} branch
+ * @return {*}
+ */
 const processRepositories = async (operation, paths, branch) => {
   try {
-    const repos = setPropertyInLast(getHandleRepos(paths, branch), "isLastRepo");
+    const repos = setPropertyInLast(
+      getHandleRepos(paths, branch),
+      "isLastRepo"
+    );
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
       const isDirEmpty = await checkDirEmpty(repo.dest);
@@ -92,45 +106,86 @@ const processRepositories = async (operation, paths, branch) => {
   }
 };
 
-// 获取仓库状态
-const getReposStatus = async (options) => {
+
+
+let allReposBranches = null;
+let specifyReposBranches = null;
+
+/**
+ * @description: 获取所有仓库分支状态
+ * @param {*} options
+ * @param {*} isLog
+ * @return {*}
+ */
+const getReposStatus = async (options, isLog = true) => {
   const repos = readFromJs("repos");
+  // TODO: 仓库状态取值后续再考虑
+  // const output = [...await getCurrentBranch(options, repos)].filter(Boolean);
+  // console.log("The current status of the repos being queried\n", output);
+  await getCurrentBranch(options, repos);
+  if (isLog) {
+    console.log(
+      "The current status of the repos being queried\n",
+      options.paths[0] === "all" ? allReposBranches : specifyReposBranches
+    );
+    process.exit(1);
+  }
+};
+
+
+/**
+ * @description: 获取当前分支状态
+ * @param {*} options
+ * @param {*} repos
+ * @return {*} 暂不设置返回值,保证控制台可以完整输出
+ */
+const getCurrentBranch = async (options, repos) => {
   const outputObj = {};
-  for (const key in repos) {
-    const item = repos[key];
-    const gitInstance = Git(item.dest);
-    await gitInstance
-      .branch(["-v", "--verbose"])
-      .then((branches) => {
+  return Promise.all(
+    Object.entries(repos).map(async (repo) => {
+      const key = repo[0];
+      const item = repo[1];
+      const gitInstance = Git(item.dest);
+      const branches = await gitInstance
+        .branch(["-v", "--verbose"])
+        .catch((err) => {
+          console.error("Error fetching branch information:", err);
+          process.exit(1);
+        });
+
+      if (branches) {
         outputObj[key] = {};
         outputObj[key].all = branches.all;
         outputObj[key].current = branches.current;
         if (options.paths[0] === "all" && item.isLastRepo) {
-          console.log(
-            "The current status of the repos being queried\n",
-            outputObj
-          );
-          process.exit(1);
+          for (const key in outputObj) {
+            appendToJs(key, outputObj[key], "branch");
+          }
+          allReposBranches = outputObj;
+          // return outputObj;
         } else {
           let obj = {};
           options.paths.forEach((v) => {
             const key = findMatchedKey(v, repos);
-            obj = {
-              [key]: outputObj[key],
-            };
+            obj[key] = outputObj[key];
+            appendToJs(key, obj[key], "branch");
           });
           if (item.isLastRepo) {
-            console.log("The current status of the repos being queried\n", obj);
-            process.exit(1);
+            specifyReposBranches = obj;
+            // return obj;
           }
         }
-      })
-      .catch((err) => {
-        console.error("Error fetching branch information:", err);
-      });
-  }
+      }
+    })
+  );
 };
 
+/**
+ * @description: 匹配app全名或别名
+ * @param {*} targetValue
+ * @param {*} obj
+ * @return {*}
+ */
 const findMatchedKey = (targetValue, obj) => {
   for (const key in obj) {
     const item = obj[key];
@@ -141,7 +196,31 @@ const findMatchedKey = (targetValue, obj) => {
   return null; // 如果没有找到匹配项，返回null
 };
 
+
+/**
+ * @description: 校验当前分支是否统一
+ * @return {*} referenceValue 分支别名
+ */
+const checkCurrentConsistency = async () => {
+  await getReposStatus({ paths: ["all"] }, false);
+  const branches = readFromJs("branch");
+  const referenceValue = Object.values(branches)[0].current;
+
+  for (const key in branches) {
+    if (branches.hasOwnProperty(key)) {
+      if (branches[key].current !== referenceValue) {
+        return false;
+      }
+    }
+  }
+
+  return referenceValue.split("/").join("_");
+};
+
+
+
 module.exports = {
   processRepositories,
   getReposStatus,
+  checkCurrentConsistency,
 };

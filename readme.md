@@ -3,8 +3,8 @@
 # 安装
 ```js
 npm install -g proxy-mosaic
-// 或者
-yarn add proxy-mosaic -g
+// or
+yarn global add proxy-mosaic
 ```
 
 #  使用

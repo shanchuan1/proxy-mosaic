@@ -5,6 +5,12 @@ const OPERATIONS = {
     CHECKOUT: "checkout",
 };
 
+const FRAMECONFIG = {
+    vue: 'vue.config.js' || 'vite.config.js',
+    gulp: 'gulpfile.js'
+}
+
 module.exports = {
-    OPERATIONS
+    OPERATIONS,
+    FRAMECONFIG
 }

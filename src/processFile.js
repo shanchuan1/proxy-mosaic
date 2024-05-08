@@ -60,7 +60,7 @@ const copyDirContents = async (src, dest) => {
       `\n Front end resources << ${getLastFolderFromPath(dest)} >> are ready`
     );
   } catch (err) {
-    console.error("An error occurred during the copying process:", err);
+    console.error("An error occurred during the moving process:", err);
   }
 };
 

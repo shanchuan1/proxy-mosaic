@@ -1,5 +1,5 @@
 const { readFromJs, appendToJs } = require("./temp/index");
-const { validateRepos } = require("./utils");
+const { validateRepos, mergeObjectsByKeys } = require("./utils");
 
 /**
  * @description: 匹配得出仓库的数据结构
@@ -99,8 +99,39 @@ const getScriptsForBuild = (mode) => {
   return buildMap;
 };
 
+
+/**
+ * @description: 校验所有app的所属框架
+ * @return {*}
+ */
+const validateFrame = () => {
+  const repos = readFromJs("repos");
+  const frames = ['vue', 'react']
+  let scriptsMap = {};
+  for (const key in repos) {
+    scriptsMap[key] = {
+      'pureNative': 'html'
+    }
+    const dependencies = require(`${repos[key].dest}/package.json`).dependencies || {};
+    for (const depName in dependencies) {
+      if (frames.includes(depName)) {
+        scriptsMap[key] = {
+          frame: {
+            [depName]: dependencies[depName]
+          }
+        }
+      } 
+    }
+  }
+  const mergedObject = mergeObjectsByKeys(scriptsMap, repos)
+  for (const key in mergedObject) {
+    appendToJs(key, mergedObject[key], "repos");
+  }
+}
+
 module.exports = {
   getHandleRepos,
   validatePaths,
   getScriptsForBuild,
+  validateFrame
 };

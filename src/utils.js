@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-04-29 10:50:09
+ * @LastEditTime: 2024-05-08 15:40:51
  */
 const fs = require("fs");
 const path = require("path");
@@ -90,10 +90,38 @@ const setPropertyInLast = (array, property) => {
   });
 };
 
+// 合并两个对象相同key的值
+const mergeObjectsByKeys = (obj1, obj2) => {
+  const mergedObject = {};
+  for (const key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
+      if (obj2.hasOwnProperty(key)) {
+        mergedObject[key] = {
+          ...obj2[key], 
+          ...obj1[key], 
+        };
+      } else {
+        mergedObject[key] = obj1[key];
+      }
+    }
+  }
+
+  for (const key in obj2) {
+    if (obj2.hasOwnProperty(key)) {
+      if (!mergedObject.hasOwnProperty(key)) {
+        mergedObject[key] = obj2[key];
+      }
+    }
+  }
+
+  return mergedObject;
+}
+
 module.exports = {
   validateRepos,
   validateServerConfig,
   deleteFolderRecursive,
   isEmptyObject,
-  setPropertyInLast
+  setPropertyInLast,
+  mergeObjectsByKeys
 };

@@ -16,5 +16,7 @@ cd "$LOCAL_PATH" && tar -czf "$ZIP_NAME.tar.gz" .
 scp "$LOCAL_PATH/$ZIP_NAME.tar.gz" "$REMOTE_USER@$REMOTE_IP:$REMOTE_PATH"
 
 # 更新远程解压逻辑以匹配tar.gz
-ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\" && rm \"$ZIP_NAME.tar.gz\""
+# ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\" && rm \"$ZIP_NAME.tar.gz\""
 
+# 暂时不删除远程压缩包
+ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\"" 

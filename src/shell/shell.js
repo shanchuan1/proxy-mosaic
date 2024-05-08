@@ -5,17 +5,16 @@ const { processOra } = require("../actuator/ora");
 const { spinner_succeed, spinner_fail } = processOra();
 
 const execShellFunc = (options) => {
-  console.log("🚀 ~ execShellFunc ~ options:", options);
   const scriptPath = path.join(__dirname, "deploy.sh");
 
   const { localPath, zipName, remoteUser, remoteIP, remotePath } = options;
 
   const deletePath = `${localPath}/${zipName}.tar.gz`;
 
-  // 使用spawn方法执行Shell脚本，并传递参数
+  // spawn执行Shell脚本，并传递参数
   const child = spawn(
     "bash",
-    [scriptPath, localPath, zipName, remoteUser, remoteIP, remotePath],
+    [scriptPath, localPath, zipName, remoteUser, remoteIP, remotePath],  // [deploy.sh, ...参数]
     {
       stdio: "inherit", // 继承标准输入输出，以便在Node.js进程中直接看到脚本的输出
       shell: true, // 在Windows环境下，确保使用shell模式执行
@@ -34,7 +33,7 @@ const execShellFunc = (options) => {
       await fse.remove(deletePath);
       spinner_succeed(`Deployed all apps successfully`);
     }
-    process.exit(1);
+    process.exit(0);
   });
 };
 

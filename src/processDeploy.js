@@ -5,16 +5,17 @@ const { getHandleRepos } = require("./getMosaicConfig");
 const { validateServerConfig, setPropertyInLast } = require("./utils");
 const execShellFunc = require("./shell/shell");
 const { getLastFolderFromPath } = require("./processFile");
+const { checkCurrentConsistency } = require("./processGit");
 const { processOra } = require("./actuator/ora");
 const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
 let id_rsa_path = "-i ~/.ssh/id_rsa"; // -i 参数指定本地私钥文件的位置
 
 // 压缩资源文件部署方式
-const copyZipShell = (localPath, serverConfig) => {
+const copyZipShell = async (localPath, serverConfig) => {
   const shellOptions = {
     localPath,
-    zipName: getLastFolderFromPath(localPath),
+    zipName: `${getLastFolderFromPath(localPath)}_${await checkCurrentConsistency()}`,
     remoteUser: serverConfig.username,
     remoteIP: serverConfig.ip,
     remotePath: serverConfig.deployDirectory,
@@ -28,7 +29,11 @@ const getScpCommand = (localPath, serverConfig) => {
   return `scp -r ${id_rsa_path} ${localPath} ${serverConfig.username}@${serverConfig.ip}:${serverConfig.deployDirectory}`;
 };
 
-// 执行部署
+/**
+ * @description: 执行服务器部署
+ * @param {*} configs
+ * @return {*}
+ */
 const processExecDeploy = async (configs) => {
   const {
     paths,
@@ -39,7 +44,7 @@ const processExecDeploy = async (configs) => {
     readFromJs("data");
   if (paths[0] === "all") {
     const scpCommand = getScpCommand(`${localPath}/*`, serverConfig);
-    // 部署全部暂时默认走压缩部署模式
+    // TODO:部署全部app暂时默认走压缩部署模式
     if (shellType) {
       copyZipShell(localPath, serverConfig);
       return;
@@ -85,7 +90,11 @@ const processExecDeploy = async (configs) => {
   }
 };
 
-// 执行SCP命令的函数
+/**
+ * @description: 执行SCP拷贝命令的函数脚本
+ * @param {*} scpCommand
+ * @return {*}
+ */
 const executeSCPCommand = async (scpCommand) => {
   return new Promise((resolve, reject) => {
     exec(scpCommand, (error, stdout, stderr) => {

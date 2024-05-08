@@ -1,9 +1,9 @@
 /*
- * @Description: 优化打包性能
+ * @Description: TODO:优化打包性能
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-04-29 18:04:04
+ * @LastEditTime: 2024-05-08 16:23:14
  */
 const chalk = require("chalk");
 const { getHandleRepos, getScriptsForBuild } = require("./getMosaicConfig");
@@ -51,14 +51,24 @@ const processExecBuild = async (params) => {
     // 循环执行build
     for (const repo of repos) {
       await execProcess("BUILD", { repo, build_Mode });
-      const content = await getFileContent(
-        doesFileExist(`${repo.dest}/vue.config.js`)
-      );
-      const outputPath = `${repo.dest}/${content.outputDir}`;
-      const inputPath =
-        content.outputDir === "dist"
-          ? `${newResourceOutPutPath}\\${repo.name}`
-          : `${newResourceOutPutPath}\\${content.outputDir}`;
+      // TODO:目前默认是识别vue项目的配置
+      let content = {};
+      let outputPath = null;
+      let inputPath = null;
+      if (repo.frame && Object.keys(repo.frame)[0] === "vue") {
+        content = await getFileContent(
+          doesFileExist(`${repo.dest}/vue.config.js`)
+        );
+        outputPath = `${repo.dest}/${content?.outputDir || "dist"}`;
+        inputPath =
+          content.outputDir === "dist"
+            ? `${newResourceOutPutPath}\\${repo.name}`
+            : `${newResourceOutPutPath}\\${content?.outputDir || "dist"}`;
+      } else {
+        // TODO:非vue项目暂时默认是dist,且以项目名为命名
+        outputPath = `${repo.dest}/dist`;
+        inputPath = `${newResourceOutPutPath}\\${repo.name}`;
+      }
       appendToJs(repo.name, inputPath, "data");
 
       // TODO: 后面考虑要不要保留这一层校验
