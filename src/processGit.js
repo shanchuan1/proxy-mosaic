@@ -1,12 +1,19 @@
+/*
+ * @Description: GIt操作模块
+ * @Author: shanchuan
+ * @Date: 2024-04-22 14:37:43
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-09 18:27:57
+ */
 const Git = require("simple-git");
 const chalk = require("chalk");
 const { getHandleRepos, validateFrame } = require("./getMosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const { execProcess } = require("./exec");
 const { readFromJs } = require("./temp/index");
-const { processOra } = require("./actuator/ora");
-const { setPropertyInLast, mergedObjectNewReposToTemp } = require("./utils");
-const { spinner_start, spinner_succeed, spinner_fail } = processOra();
+const { setPropertyInLast, mergedObjectNewReposToTemp, getReposByPathsAndSetLast } = require("./utils");
+const { spinner_start, spinner_succeed, spinner_fail } =
+  require("./actuator/ora").processOra();
 
 // 定义GIT对应的操作事件
 const OPERATION_FUNCTIONS = {
@@ -15,7 +22,7 @@ const OPERATION_FUNCTIONS = {
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
     await execProcess("INSTALL", { repo });
     if (repo.isLastRepo) {
-      validateFrame(); // 校验所有app使用的框架
+      await validateFrame(); // 校验所有app使用的框架
       process.exit(1);
     }
   },
@@ -65,25 +72,19 @@ const OPERATION_FUNCTIONS = {
  */
 const processRepositories = async (operation, paths, branch) => {
   try {
-    let getRepos = [];
+    // branch 暂时只做切换分支使用
+    let repos = [];
     if (operation === "clone") {
-      getRepos = getHandleRepos(paths, branch);
+      repos = setPropertyInLast(getHandleRepos(paths, branch), "isLastRepo");
     } else {
-      const tempRepos = readFromJs("repos");
-      getRepos = Object.values(tempRepos)
-        .map((v) => ({ ...v, branch }))
-        .filter((v) => {
-          if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
-            return paths.includes(v.name) || paths.includes(v.byName);
-          }
-          return v;
-        });
+      repos = getReposByPathsAndSetLast(paths, "isLastRepo", (v) => ({
+        ...v,
+        branch,
+      }));
     }
-    const repos = setPropertyInLast(getRepos, "isLastRepo");
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
       const isDirEmpty = await checkDirEmpty(repo.dest);
-
       const gitInstance = Git(repo.dest);
 
       /* 如过本地仓库不存在 */
@@ -175,7 +176,7 @@ const getCurrentBranch = async (options, repos) => {
               branches: allReposBranches[key],
             };
           }
-          mergedObjectNewReposToTemp(allReposBranchesObject, repos);
+          await mergedObjectNewReposToTemp(allReposBranchesObject, repos);
           // TODO: 保留后续优化
           // return outputObj;
         } else {
@@ -192,7 +193,7 @@ const getCurrentBranch = async (options, repos) => {
                 branches: specifyReposBranches[key],
               };
             }
-            mergedObjectNewReposToTemp(specifyReposBranchesObject, repos);
+            await mergedObjectNewReposToTemp(specifyReposBranchesObject, repos);
             // TODO: 保留后续优化
             // return obj;
           }
@@ -215,7 +216,7 @@ const findMatchedKey = (targetValue, obj) => {
       return key;
     }
   }
-  return null; // 如果没有找到匹配项，返回null
+  return null;
 };
 
 /**
@@ -224,12 +225,12 @@ const findMatchedKey = (targetValue, obj) => {
  */
 const checkCurrentConsistency = async () => {
   await getReposStatus({ paths: ["all"] }, false);
-  const branches = readFromJs("branch");
-  const referenceValue = Object.values(branches)[0].current;
+  const repos = readFromJs("repos");
+  const referenceValue = Object.values(repos)[0].branches.current;
 
-  for (const key in branches) {
-    if (branches.hasOwnProperty(key)) {
-      if (branches[key].current !== referenceValue) {
+  for (const key in repos) {
+    if (repos.hasOwnProperty(key)) {
+      if (repos[key].branches.current !== referenceValue) {
         return false;
       }
     }

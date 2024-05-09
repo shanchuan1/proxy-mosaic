@@ -16,6 +16,15 @@ checkNodeVersion();
 global.LocalPathCWD = process.cwd();
 // console.log('🚀 ~ global.LocalPathCWD:', global.LocalPathCWD)
 
+
+// 设置环境变量
+process.env.SHARED_DATA = JSON.stringify({ name: 'zhangsan' });
+// 或使用cross-env跨平台设置环境变量
+// require('cross-env').env.SHARED_DATA = JSON.stringify({ key: 'value' });
+const sharedData = JSON.parse(process.env.SHARED_DATA);
+console.log('🚀 ~ sharedData:', sharedData)
+
+
 // 先定义全局选项
 program.option("-v, --version", "output the version number", () => {
   console.log(`version: ${packageJson.version}`);

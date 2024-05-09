@@ -1,8 +1,7 @@
 const { greenLog } = require("./terminalLog");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-const { processOra } = require("./actuator/ora");
-const { spinner_start, spinner_succeed } = processOra();
+const { spinner_start,  spinner_succeed } = require("./actuator/ora").processOra();
 
 global.DEFAULT_PACKAGE_MANAGER = "yarn";
 

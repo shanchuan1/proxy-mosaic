@@ -1,8 +1,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fse = require("fs-extra");
-const { processOra } = require("../actuator/ora");
-const { spinner_succeed, spinner_fail } = processOra();
+const { spinner_succeed, spinner_fail } = require("../actuator/ora").processOra();
 
 const execShellFunc = (options) => {
   const scriptPath = path.join(__dirname, "deploy.sh");

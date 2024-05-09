@@ -104,7 +104,7 @@ const getScriptsForBuild = (mode) => {
  * @description: 校验所有app的所属框架
  * @return {*}
  */
-const validateFrame = () => {
+const validateFrame = async () => {
   const repos = readFromJs("repos");
   const frames = ['vue', 'react']
   let scriptsMap = {};
@@ -123,7 +123,7 @@ const validateFrame = () => {
       } 
     }
   }
-  mergedObjectNewReposToTemp(scriptsMap, repos)
+  await mergedObjectNewReposToTemp(scriptsMap, repos)
 }
 
 module.exports = {

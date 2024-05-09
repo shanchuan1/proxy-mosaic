@@ -1,3 +1,10 @@
+/*
+ * @Description: 部署模块
+ * @Author: shanchuan
+ * @Date: 2024-04-22 14:37:43
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-09 11:30:07
+ */
 const chalk = require("chalk");
 const { exec } = require("child_process");
 const { readFromJs } = require("./temp/index");
@@ -6,8 +13,7 @@ const { validateServerConfig, setPropertyInLast } = require("./utils");
 const execShellFunc = require("./shell/shell");
 const { getLastFolderFromPath } = require("./processFile");
 const { checkCurrentConsistency } = require("./processGit");
-const { processOra } = require("./actuator/ora");
-const { spinner_start, spinner_succeed, spinner_fail } = processOra();
+const { spinner_start, spinner_succeed, spinner_fail } = require("./actuator/ora").processOra();
 
 let id_rsa_path = "-i ~/.ssh/id_rsa"; // -i 参数指定本地私钥文件的位置
 

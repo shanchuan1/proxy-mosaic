@@ -1,36 +1,32 @@
 /*
- * @Description: 后面可能会考虑重构此模块
+ * @Description: 后面可能会考虑重构此清除模块
  * @Author: shanchuan
  * @Date: 2024-04-29 11:12:26
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-04-29 17:58:29
+ * @LastEditTime: 2024-05-09 18:29:36
  */
 const fs = require("fs");
-const fse = require("fs-extra");
-const { setPropertyInLast } = require("./utils");
+const {
+  clearOperation,
+  getReposByPathsAndSetLast,
+} = require("./utils");
 const { deleteFromJs, readFromJs } = require("./temp/index");
-const { processOra } = require("./actuator/ora");
-const { spinner_start, spinner_succeed, spinner_fail } = processOra();
+const { spinner_start, spinner_succeed } =
+  require("./actuator/ora").processOra();
 
 // 执行清除
 const processExecClean = async (configs) => {
   try {
     const { paths, options } = configs;
     const dataTemp = readFromJs("data");
-    const reposTmp = readFromJs("repos");
     let repos = [];
-    if (paths[0] === "all") {
-      repos = Object.values(reposTmp);
-      // 如果本地temp没有说明全部已经清除完毕
-      if (!repos.length) {
-        spinner_succeed("ALL app has been cleaned");
-        process.exit(1);
-      }
-    } else {
-      const specifyRepos = Object.values(reposTmp).filter((v) => {
-        return paths.includes(v.name) || paths.includes(v.byName);
-      });
-      repos = setPropertyInLast(specifyRepos, "isLastRepo");
+
+    if (paths.length > 0) {
+      repos = getReposByPathsAndSetLast(paths, "isLastRepo");
+    }
+    if (!repos.length) {
+      spinner_succeed("ALL app has been cleaned");
+      process.exit(1);
     }
 
     if (options.config) {
@@ -74,18 +70,20 @@ const cleanFunc = async (cleanOptions) => {
   try {
     await checkIsDirectoryDeleted(cleanOptions);
     const { dest, name, isLastRepo, isOutPut } = cleanOptions;
-    spinner_start(`Clearing ${(isOutPut && "resource") || "app"} ${name} ...`);
+    spinner_start(
+      `Clearing ${(isOutPut && "resource") || "app"} ${name} ...\n`
+    );
     if (dest) {
-      await fse.remove(dest);
+      await clearOperation(dest);
       deleteFromJs(name, "repos");
       spinner_succeed(
         `${(isOutPut && "Resource") || "App"} ${name} cleared successfully`
       );
       isOutPut && deleteFromJs(name, "data");
-      isOutPut && isLastRepo && process.exit(1);
+      isOutPut && isLastRepo && deleteFromJs("data") && process.exit(1);
     }
   } catch (error) {
-    spinner_fail(error);
+    console.log("cleanFunc ~ error:", error);
     process.exit(1);
   }
 };

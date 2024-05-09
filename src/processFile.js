@@ -1,3 +1,10 @@
+/*
+ * @Description: 模板创建模块
+ * @Author: shanchuan
+ * @Date: 2024-04-22 14:37:43
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-09 11:30:37
+ */
 const fs = require("fs");
 const path = require("path");
 const fse = require("fs-extra");
@@ -6,9 +13,7 @@ const downgit = require("download-git-repo");
 const rimraf = require("rimraf");
 const { greenLog } = require("./terminalLog");
 const { appendToJs } = require("./temp/index");
-const { processOra } = require("./actuator/ora");
-
-const { spinner_start, spinner_succeed, spinner_fail } = processOra();
+const { spinner_start, spinner_succeed, spinner_fail } = require("./actuator/ora").processOra();
 
 // 获取文件夹名称
 const getLastFolderFromPath = (filePath) => {

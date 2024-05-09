@@ -3,11 +3,13 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-08 22:51:20
+ * @LastEditTime: 2024-05-09 18:44:34
  */
 const fs = require("fs");
 const path = require("path");
-const { appendToJs } = require("./temp/index");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
+const { appendToJs, readFromJs } = require("./temp/index");
 
 // mosaic配置项repos的校验
 const validateRepos = (repos) => {
@@ -91,26 +93,6 @@ const setPropertyInLast = (array, property) => {
   });
 };
 
-// 给数组对象设置build属性
-const setBuildPropertyInRepos = (array, property, hasBuild) => {
-  if (Array.isArray(array)) {
-    return array.map((v) => {
-      if (!v.hasOwnProperty(property)) {
-        v[property] = {
-          current: v.branch,
-          hasBuilded: hasBuild,
-        };
-      }
-      return v;
-    });
-  } else {
-    array[property] = {
-      current: array.branch,
-      hasBuilded: hasBuild,
-    };
-    return array
-  }
-};
 
 // 合并两个对象相同key的值
 const mergeObjectsByKeys = (obj1, obj2) => {
@@ -141,11 +123,38 @@ const mergeObjectsByKeys = (obj1, obj2) => {
 
 // 合并仓库新状态
 const mergedObjectNewReposToTemp = (leftObj, rightObj) => {
-  const mergedObject = mergeObjectsByKeys(leftObj, rightObj);
-  for (const key in mergedObject) {
-    appendToJs(key, mergedObject[key], "repos");
-  }
+  return new Promise((resolve) => {
+    const mergedObject = mergeObjectsByKeys(leftObj, rightObj);
+    for (const key in mergedObject) {
+      appendToJs(key, mergedObject[key], "repos");
+    }
+    resolve(true)
+  })
 };
+
+// 删除操作
+const clearOperation = async (dest) => {
+  await exec(`rm -rf ${dest}`)
+}
+
+
+
+// 获取筛选app与设置最后项的Repos
+const getReposByPathsAndSetLast = (paths, property, cb) => {
+  const tempRepos = readFromJs("repos");
+  let mapRepos = []
+  if (cb) {
+    mapRepos = Object.values(tempRepos).map(cb)
+  }
+ const filterRepos = Object.values(cb ? mapRepos : tempRepos).filter((v) => {
+    if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
+      return paths.includes(v.name) || paths.includes(v.byName);
+    }
+    return v;
+  })
+  return setPropertyInLast(filterRepos, property)
+}
+
 
 module.exports = {
   validateRepos,
@@ -154,5 +163,6 @@ module.exports = {
   isEmptyObject,
   setPropertyInLast,
   mergedObjectNewReposToTemp,
-  setBuildPropertyInRepos,
+  clearOperation,
+  getReposByPathsAndSetLast
 };

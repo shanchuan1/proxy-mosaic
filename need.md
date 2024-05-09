@@ -54,14 +54,15 @@ const repos = [
   },
 ];
 
-const serverConfig = {
-  username: 'root',
-  ip: "192.168.23.191:22",
-  deployDirectory: "/user/local/esign/apps/front",
-}
 module.exports = {
-  repos,
-  serverConfig
+  repos
 };
+
+```
+
+
+# tempRepos 缓存数据
+```js
+
 
 ```

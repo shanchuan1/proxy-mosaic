@@ -1,8 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 const fileDataPath = path.resolve(__dirname, "../temp/tempFiles/data.js");
-const fileReposPath = path.resolve(__dirname, "../temp/tempFiles/reposStatus.js");
-const serverConfigPath = path.resolve(__dirname, "../temp/tempFiles/serverConfig.js");
+const fileReposPath = path.resolve(
+  __dirname,
+  "../temp/tempFiles/reposStatus.js"
+);
+const serverConfigPath = path.resolve(
+  __dirname,
+  "../temp/tempFiles/serverConfig.js"
+);
 const buildModePath = path.resolve(__dirname, "../temp/tempFiles/buildMode.js");
 
 const fileMap = {
@@ -20,6 +26,7 @@ const readFromJs = (type) => {
     const data = JSON.parse(jsData.trim());
     return data;
   } catch (error) {
+    console.log('readFromJs ~ error:', error)
     return {}; // 初始化为空对象
   }
 };
@@ -42,8 +49,17 @@ const deleteFromJs = (key, type) => {
   // 读取现有对象
   let existingData = readFromJs(type);
 
-  // 校验现有对象存在并删除
-  existingData[key] && delete existingData[key];
+  if (!Object.keys(existingData).length) {
+    return
+  }
+
+  if (key) {
+    // 校验现有对象存在并删除
+    existingData[key] && delete existingData[key];
+  } else {
+    // 清空对象所有数据
+    existingData = {}
+  }
 
   // 更新文件内容（以JSON格式写入）
   const updatedJsData = JSON.stringify(existingData, null, 2);
@@ -53,5 +69,5 @@ const deleteFromJs = (key, type) => {
 module.exports = {
   readFromJs,
   appendToJs,
-  deleteFromJs
+  deleteFromJs,
 };
