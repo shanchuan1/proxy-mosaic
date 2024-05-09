@@ -2,9 +2,11 @@
   "name": "proxy-mosaic",
   "version": "1.0.4",
   "description": "🛠️ One click (start, package, deploy) proxy tool for front-end application groups",
-  "bin": {
-    "mosaic": "bin/index.js"
-  },
+  "private": true,
+  "workspaces": [
+    "packages/proxy-mosaic/*",
+    "packages/test/*"
+  ],
   "scripts": {
     "clear": "rimraf "
   },
