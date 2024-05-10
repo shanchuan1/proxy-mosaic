@@ -24,7 +24,6 @@ program
     }
     const commandArgs = {
       currentTemplatePath: path.resolve(__dirname, "../template"),
-      currentLocalPathCWD: process.cwd(),
       projectName: name,
       options,
     };

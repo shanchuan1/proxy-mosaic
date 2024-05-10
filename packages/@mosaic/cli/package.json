@@ -1,0 +1,39 @@
+{
+  "name": "@mosaic/cli",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "zhongqifeng <1121021693@qq.com>",
+  "homepage": "",
+  "license": "ISC",
+  "bin": {
+    "mosaic": "bin/mosaic.js"
+  },
+  "main": "lib/mosaic-cli.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "chalk": "2.4.2",
+    "commander": "8.0.0",
+    "download-git-repo": "^3.0.2",
+    "fs-extra": "^11.2.0",
+    "is-online": "9.0.0",
+    "minimist": "^1.2.8",
+    "mosaic-serve": "^0.0.0",
+    "ora": "5.4.1",
+    "rimraf": "4.4.1"
+  },
+  "engines": {
+    "node": "^12.0.0 || >= 14.0.0"
+  }
+}

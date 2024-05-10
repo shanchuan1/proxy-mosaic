@@ -66,3 +66,31 @@ module.exports = {
 
 
 ```
+
+
+# lerna配置
+```js
+// lerna.json
+{
+  "useWorkspaces": true,
+  "npmClient": "yarn",
+  "packages": [
+    "packages/proxy/mosaic*"
+  ],
+  "version": "0.0.0"
+}
+
+// package.json
+{
+  "name": "proxy-mosaic",
+  "private": true,
+  "workspaces": [
+    "packages/proxy/*",
+    "packages/test/*"
+  ],
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}
+
+```

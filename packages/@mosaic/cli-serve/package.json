@@ -1,0 +1,28 @@
+{
+  "name": "@mosaic/cli-serve",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "zhongqifeng <1121021693@qq.com>",
+  "homepage": "",
+  "license": "ISC",
+  "bin": {
+    "mosaic-serve": "bin/mosaic-serve.js"
+  },
+  "main": "lib/mosaic-serve.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "chalk": "2.4.2"
+  }
+}
