@@ -3,20 +3,16 @@
  * @Author: shanchuan
  * @Date: 2024-05-10 10:34:32
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-10 15:51:30
+ * @LastEditTime: 2024-05-11 16:41:06
  */
-const isOnline = require("is-online");
-const downgit = require("download-git-repo");
 const path = require("path");
-const { spinner_start, spinner_succeed, spinner_fail } =
-  require("./utils/ora").processOra();
-const writeFileTree = require("./utils/writeFileTree");
+const chalk = require("chalk")
 
+const writeFileTree = require("./utils/writeFileTree");
 
 process.env.MOSAIC_CLI_CONTEXT;
 
 const create = async (options) => {
-  console.log("🚀 ~ create ~ options:", options);
   const { name, context, proNameByMosaic } = getCurrentProInfo(options);
 
   // TODO:获取线上最新版本
@@ -27,16 +23,16 @@ const create = async (options) => {
     version: "0.1.0",
     private: true,
     scripts: {
-      'clone': 'mosaic-serve clone',
-      'build': 'mosaic-serve build',
-      'deploy': 'mosaic-serve deploy -c',
-      'checkout': 'mosaic-serve checkout ',
+      gen: "mosaic-serve generate",
+      build: "mosaic-serve build",
+      deploy: "mosaic-serve deploy -c",
+      checkout: "mosaic-serve checkout ",
     },
     devDependencies: {},
     // ...resolvePkg(context)
   };
 
-  const deps = ["mosaic-serve"];
+  const deps = ["@mosaic/cli-serve"];
   deps.forEach((dep) => {
     // version = `~${latestMinor}`;
     version = `~0.0.1`;
@@ -44,19 +40,15 @@ const create = async (options) => {
   });
 
   await writeFileTree(proNameByMosaic, {
-    [`${name}_output`]: null,
-    [`${name}_pro`]: null,
+    "apps": null,
+    "packages": null,
     "package.json": JSON.stringify(pkg, null, 2),
-    "mosaic.config.js": require('../template/mosaic.config.js')
+    "mosaic.config.js": require("../template/mosaic.config.js"),
   });
-  return 
- 
+  console.log(`mosaic ${chalk.green.bold("success")} Initialized Mosaic files`);
+  process.exit(0);
 
-  // (await isOnline())) && getOriginTemplate(options);
 };
-
-
-
 
 const getCurrentProInfo = (options) => {
   const { projectName } = options;
@@ -70,8 +62,8 @@ const getCurrentProInfo = (options) => {
   const inCurrent = projectName === ".";
   const name = inCurrent ? path.relative("../", cwd) : projectName;
 
-  console.log("🚀 ~ create ~ name:", name);
-  console.log("🚀 ~ create ~ process.env.:", process.env.MOSAIC_CLI_CONTEXT);
+  // console.log("🚀 ~ create ~ name:", name);
+  // console.log("🚀 ~ create ~ process.env.:", process.env.MOSAIC_CLI_CONTEXT);
   return {
     name,
     context: targetDir,
@@ -79,31 +71,7 @@ const getCurrentProInfo = (options) => {
   };
 };
 
-const getOriginTemplate = async ({
-  currentLocalPathCWD: destDir,
-  projectName = "front",
-}) => {
-  const renamingMap = {
-    front_output: `${projectName}_output`,
-    front_pro: `${projectName}_pro`,
-  };
-  const gitHubPath = "github:shanchuan1/template-proxy-mosaic";
-  spinner_start("Creating Mosaic project ...");
-  await downgit(gitHubPath, destDir, { clone: false }, async (err) => {
-    if (err) {
-      rimraf(destDir, (error) => {
-        if (error) console.error(error);
-      });
-      spinner_fail("Mosaic project creation failed:", err);
-      process.exit(1);
-    }
-    // 根据重置映射表，在目标目录下进行重置操作
-    await renameDirectoriesSerially(`${destDir}/mosaic_project`, renamingMap);
-    appendToJs("currentMosaicProjectPath", `${destDir}/mosaic_project`, "data");
-    spinner_succeed("Mosaic project created successfully");
-    process.exit(1);
-  });
-};
+
 
 module.exports = (...args) => {
   return create(...args).catch((err) => {

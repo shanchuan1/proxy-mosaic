@@ -1,8 +1,8 @@
 module.exports = `
 const repos = [
   {
-    url: "git仓库地址",
-    name: "项目名称",
+    url: "Git repository URL",
+    name: "Project name",
   },
 ];
 

@@ -29,7 +29,6 @@
     "fs-extra": "^11.2.0",
     "is-online": "9.0.0",
     "minimist": "^1.2.8",
-    "mosaic-serve": "^0.0.0",
     "ora": "5.4.1",
     "rimraf": "4.4.1"
   },

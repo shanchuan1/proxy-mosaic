@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
 const minimist = require("minimist");
-const path = require("path");
 const chalk = require("chalk")
 const packageJson = require("../package.json");
 const program = new Command();
@@ -23,11 +22,10 @@ program
       );
     }
     const commandArgs = {
-      currentTemplatePath: path.resolve(__dirname, "../template"),
       projectName: name,
       options,
     };
-    // actuator(commandArgs);
+    console.log(`mosaic ${chalk.blue('notice')} ${chalk.magenta('cli')} v${packageJson.version}`);
     require("../lib/create")(commandArgs);
   });
 
