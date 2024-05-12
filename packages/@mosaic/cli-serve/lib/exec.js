@@ -1,7 +1,8 @@
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-const { spinner_start,  spinner_succeed } = require("./actuator/ora").processOra();
-const { greenLog } = require("./terminalLog");
+const chalk = require("chalk");
+const { spinner_start, spinner_succeed } =
+  require("./actuator/ora").processOra();
 
 global.DEFAULT_PACKAGE_MANAGER = "yarn";
 
@@ -13,7 +14,8 @@ const packManager = {
   },
   npm: {
     INSTALL: ({ repo }) => `cd ${repo.dest} && npm run install`,
-    BUILD: ({ repo, build_Mode }) => `npm run --cwd "${repo.dest}" ${build_Mode}`,
+    BUILD: ({ repo, build_Mode }) =>
+      `npm run --cwd "${repo.dest}" ${build_Mode}`,
   },
   pnpm: {
     INSTALL: ({ repo }) => `cd ${repo.dest} && pnpm install`,
@@ -22,43 +24,53 @@ const packManager = {
   },
 };
 
-const execLog = (command, repo) => {
-  return (stdout) => {
+const execLog = async (command, repo) => {
+  return (stdout, stderr) => {
     command === "INSATLL" &&
-      greenLog(`<<${repo.name}>> dependency has been installed and completed`);
+      spinner_succeed(
+        `<<${repo.name}>> dependency has been installed and completed`
+      );
     command === "BUILD" &&
-      greenLog(`<<${repo.name}>> has been packaged and built`);
-    console.log("stdout", stdout);
+      spinner_succeed(
+        `<<${
+          repo.name
+        }>> has been packaged with ${`built in buildMode: ${chalk.blue(
+          repo.buildMode
+        )} and branch in current: ${chalk.blue(repo.branches.current)}`} `
+      );
+
+    if (JSON.parse(process.env.IS_LOG_STDOUT).log) {
+      stdout && console.log("📦 ~ stdout:", stdout);
+      stderr && console.error(`An error occurred for ${repo.url}: ${stderr}`);
+    }
   };
 };
 
 /* 执行shell脚本 */
-const execProcess = async (command, options) => {
+const execProcess = async (command, repo) => {
   try {
-    const { repo, build_Mode } = options;
+    const build_Mode = repo.buildMode;
+    const currentBranch = repo.branches.current;
     const bashCommand = packManager[global.DEFAULT_PACKAGE_MANAGER][command]({
       repo,
       build_Mode,
     });
 
     await spinner_start(
-      `${repo.name}: Executing ${
-        command === "BUILD" ? build_Mode : command
-      } operation...\n`
+      `${repo.name}: Executing operation with ${
+        command === "BUILD"
+          ? `build mode of ${chalk.green(build_Mode)}`
+          : command
+      } and current branch as ${chalk.green(currentBranch)} ...`
     );
-    const { stdout, stderr } = await exec(bashCommand);
-    execLog(command, repo)(stdout);
 
-    if (stderr) {
-      console.error(`An error occurred for ${repo.url}: ${stderr}`);
-    }
-    await spinner_succeed(
-      `The ${repo.name} of ${
-        command === "BUILD" ? build_Mode : command
-      } operation has been completed`
-    );
+    const { stdout, stderr } = await exec(bashCommand);
+
+    await (
+      await execLog(command, repo)
+    )(stdout, stderr);
   } catch (error) {
-    console.log(' execProcess -- error:', error)
+    console.log(" execProcess -- error:", error);
     process.exit(0);
   }
 };

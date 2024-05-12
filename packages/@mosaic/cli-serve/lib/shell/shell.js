@@ -7,6 +7,7 @@ const execShellFunc = (options) => {
   const scriptPath = path.join(__dirname, "deploy.sh");
 
   const { localPath, zipName, remoteUser, remoteIP, remotePath } = options;
+  console.log('🚀 ~ execShellFunc ~ options:', options)
 
   const deletePath = `${localPath}/${zipName}.tar.gz`;
 

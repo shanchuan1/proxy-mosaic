@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-11 13:15:56
+ * @LastEditTime: 2024-05-12 12:30:32
  */
 const fs = require("fs");
 const path = require("path");
@@ -61,8 +61,8 @@ const doesFileExist = (filePath) => {
 const copyDirContents = async (src, dest) => {
   try {
     await fse.copy(src, dest, { overwrite: true });
-    greenLog(
-      `\n Front end resources << ${getLastFolderFromPath(dest)} >> are ready`
+    spinner_succeed(
+      `Front end resources << ${path.basename(dest)} >> are ready`
     );
   } catch (err) {
     console.error("An error occurred during the moving process:", err);

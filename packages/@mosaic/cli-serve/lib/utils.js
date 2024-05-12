@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-11 18:52:12
+ * @LastEditTime: 2024-05-12 18:40:28
  */
 const fs = require("fs");
 const path = require("path");
@@ -12,24 +12,24 @@ const exec = util.promisify(require("child_process").exec);
 const { appendToJs, readFromJs } = require("./temp/index");
 
 // mosaic配置项repos的校验
-const validateRepos = (repos) => {
-  for (const repo of repos) {
-    if (
-      typeof repo.url !== "string" ||
-      repo.url.trim() === "" ||
-      typeof repo.name !== "string" ||
-      repo.name.trim() === ""
-    ) {
-      const invalidKey = !repo.url || repo.url.trim() === "" ? "url" : "name";
-      throw new Error(
-        `Invalid or missing '${invalidKey}' in repository: ${JSON.stringify(
-          repo
-        )}.`
-      );
-    }
-  }
-  return true;
-};
+// const validateRepos = (repos) => {
+//   for (const repo of repos) {
+//     if (
+//       typeof repo.url !== "string" ||
+//       repo.url.trim() === "" ||
+//       typeof repo.name !== "string" ||
+//       repo.name.trim() === ""
+//     ) {
+//       const invalidKey = !repo.url || repo.url.trim() === "" ? "url" : "name";
+//       throw new Error(
+//         `Invalid or missing '${invalidKey}' in repository: ${JSON.stringify(
+//           repo
+//         )}.`
+//       );
+//     }
+//   }
+//   return true;
+// };
 
 // mosaic配置项serverConfig的校验
 const validateServerConfig = (serverConfig) => {
@@ -84,14 +84,14 @@ const isEmptyObject = (obj) => {
 };
 
 // 给数组对象最后一项设置属性
-const setPropertyInLast = (array, property) => {
-  return array.map((v, i) => {
-    if (i === array.length - 1 && !v.hasOwnProperty(property)) {
-      v[property] = true;
-    }
-    return v;
-  });
-};
+// const setPropertyInLast = (array, property) => {
+//   return array.map((v, i) => {
+//     if (i === array.length - 1 && !v.hasOwnProperty(property)) {
+//       v[property] = true;
+//     }
+//     return v;
+//   });
+// };
 
 
 // 合并两个对象相同key的值
@@ -140,20 +140,20 @@ const clearOperation = async (dest) => {
 
 
 // 获取筛选app与设置最后项的Repos
-const getReposByPathsAndSetLast = (paths, property, cb) => {
-  const tempRepos = readFromJs("repos");
-  let mapRepos = []
-  if (cb) {
-    mapRepos = Object.values(tempRepos).map(cb)
-  }
- const filterRepos = Object.values(cb ? mapRepos : tempRepos).filter((v) => {
-    if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
-      return paths.includes(v.name) || paths.includes(v.byName);
-    }
-    return v;
-  })
-  return setPropertyInLast(filterRepos, property)
-}
+// const getReposByPathsAndSetLast = (paths, property, cb) => {
+//   const tempRepos = readFromJs("repos");
+//   let mapRepos = []
+//   if (cb) {
+//     mapRepos = Object.values(tempRepos).map(cb)
+//   }
+//  const filterRepos = Object.values(cb ? mapRepos : tempRepos).filter((v) => {
+//     if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
+//       return paths.includes(v.name) || paths.includes(v.byName);
+//     }
+//     return v;
+//   })
+//   return setPropertyInLast(filterRepos, property)
+// }
 
 
 // 过滤对象内空属性值的key
@@ -175,13 +175,13 @@ const removeEmptyProperties = (obj) => {
 
 
 module.exports = {
-  validateRepos,
+  // validateRepos,
   validateServerConfig,
   deleteFolderRecursive,
   isEmptyObject,
-  setPropertyInLast,
+  // setPropertyInLast,
   mergedObjectNewReposToTemp,
   clearOperation,
-  getReposByPathsAndSetLast,
-  removeEmptyProperties
+  // getReposByPathsAndSetLast,
+  removeEmptyProperties,
 };

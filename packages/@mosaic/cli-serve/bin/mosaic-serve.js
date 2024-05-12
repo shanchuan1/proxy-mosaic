@@ -7,6 +7,7 @@ const {
   cleanInquirer,
 } = require("../lib/actuator/inquirer");
 const actuator = require("../lib/actuator");
+const chalk = require("chalk");
 
 process.env.MOSAIC_CLI_CONTEXT = process.cwd();
 
@@ -49,6 +50,7 @@ program
   .command("generate [paths...]")
   .description("generate the specify project powered by proxy-mosaic")
   .option("-p, --path <path>", "Specify the project you need to clone")
+  .option("-l, --log", "The console expand dependent output")
   .action((paths, options) => getCommandParams("generate", paths, options));
 
 program
@@ -61,6 +63,7 @@ program
   .option("-c, --config ", "configs for build mode")
   .option("-a, --add ", "add the configs for build mode")
   .option("-m, --mode <mode> ", "specify a build mode")
+  .option("-l, --log", "The console expand dependent output")
   .action(async (paths, options) => {
     // -c 选择配置 -a 新增配置 走交互命令 获取打包模式
     const res =
@@ -116,6 +119,15 @@ program
     getCommandParams("show_branch", projects, {});
   });
 
+program
+  .command("inspect")
+  .command("branch")
+  .arguments("[projects...]", "The list of projects to show branches for")
+  .description("show a branch in your project powered by proxy-mosaic")
+  .action((projects) => {
+    getCommandParams("inspect", projects, {});
+  });
+
 // 获取特定的交互
 const getInquirerOperation = async (type, options) => {
   const operationMap = {
@@ -128,6 +140,9 @@ const getInquirerOperation = async (type, options) => {
 
 // 通用获取命令参数
 const getCommandParams = (type, paths, options) => {
+  console.log('🚀 ~ getCommandParams ~ options:', options)
+  const { log } = options
+  process.env.IS_LOG_STDOUT = JSON.stringify({ log })
   if (!paths.length) {
     paths = ["all"];
   }
@@ -151,6 +166,7 @@ const getCommandParams = (type, paths, options) => {
       delete commandArgs[type].options.configBuildMode;
   }
 
+  console.log(`mosaic ${chalk.blue('notice')} ${chalk.magenta('mosaic-serve')} v${packageJson.version}`);
   // 统一执行器
   actuator(commandArgs);
 };

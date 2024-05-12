@@ -3,31 +3,23 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-09 11:30:07
+ * @LastEditTime: 2024-05-12 19:22:11
  */
 const chalk = require("chalk");
+const path = require("path");
 const { exec } = require("child_process");
-const { readFromJs } = require("../temp/index");
-const { getReposConfig } = require("../mosaicConfig");
-const { validateServerConfig, setPropertyInLast } = require("../utils");
+const ReposConfigurator = require("../mosaicConfig");
+const { validateServerConfig } = require("../utils");
 const execShellFunc = require("../shell/shell");
-const { getLastFolderFromPath } = require("./processFile");
-const { checkCurrentConsistency } = require("./processGit");
-const { spinner_start, spinner_succeed, spinner_fail } = require("../actuator/ora").processOra();
+const { spinner_start, spinner_succeed, spinner_fail } =
+  require("../actuator/ora").processOra();
+
+const packagesOutputPath = `${
+  process.env.MOSAIC_CLI_CONTEXT || process.cwd()
+}\\packages`;
 
 let id_rsa_path = "-i ~/.ssh/id_rsa"; // -i 参数指定本地私钥文件的位置
 
-// 压缩资源文件部署方式
-const copyZipShell = async (localPath, serverConfig) => {
-  const shellOptions = {
-    localPath,
-    zipName: `${getLastFolderFromPath(localPath)}_${await checkCurrentConsistency()}`,
-    remoteUser: serverConfig.username,
-    remoteIP: serverConfig.ip,
-    remotePath: serverConfig.deployDirectory,
-  };
-  execShellFunc(shellOptions);
-};
 
 // 获取拷贝远程服务器的执行命令
 const getScpCommand = (localPath, serverConfig) => {
@@ -46,32 +38,31 @@ const processExecDeploy = async (configs) => {
     options: { serverConfig },
     shellType = "zip",
   } = configs;
-  const { newResourceOutPutPath: localPath, ...otherPathConfig } =
-    readFromJs("data");
+  const Repos = new ReposConfigurator(paths, { serverConfig });
+  const repos = await Repos.getRepos();
+  console.log("🚀 ~ processExecDeploy ~ repos:", repos);
+  const currentBranch = repos[0].branches.current;
+
   if (paths[0] === "all") {
-    const scpCommand = getScpCommand(`${localPath}/*`, serverConfig);
     // TODO:部署全部app暂时默认走压缩部署模式
     if (shellType) {
-      copyZipShell(localPath, serverConfig);
-      return;
+      const shellOptions = {
+        localPath: packagesOutputPath,
+        zipName: `${path.basename(packagesOutputPath)}_${currentBranch}`,
+        remoteUser: serverConfig.username,
+        remoteIP: serverConfig.ip,
+        remotePath: serverConfig.deployDirectory,
+      };
+      execShellFunc(shellOptions);
     }
-    spinner_start(`Deploying all projects to ${serverConfig.ip} Server`);
-    await executeSCPCommand(scpCommand)
-      .then((res) => {
-        spinner_succeed(`Deployed all apps successfully${res}`);
-        process.exit(0);
-      })
-      .catch((err) => {
-        spinner_fail(`Failed to execute SSH command：${err}`);
-        process.exit(0);
-      });
   } else {
-    const repos = setPropertyInLast(getReposConfig(paths), "isLastRepo");
     for (const repo of repos) {
-      const outputPath = otherPathConfig[repo.name];
+      const outputPath = repo.packages.packageInputPath;
       if (!outputPath) {
         spinner_fail(
-          `Unable to find corresponding path configuration:${repo.name}`
+          `Unable to find corresponding path configuration:${chalk.blue(
+            repo.name
+          )}`
         );
         process.exit(0);
       }
@@ -89,7 +80,7 @@ const processExecDeploy = async (configs) => {
           }
         })
         .catch((error) => {
-          spinner_fail(`Failed to execute SSH command：${error}`);
+          spinner_fail(`Failed to execute SSH command：${chalk.gray(error)}`);
           process.exit(0);
         });
     }
@@ -139,5 +130,4 @@ const executeSSHCommand = async (command) => {
 
 module.exports = {
   processExecDeploy,
-  executeSSHCommand,
 };
