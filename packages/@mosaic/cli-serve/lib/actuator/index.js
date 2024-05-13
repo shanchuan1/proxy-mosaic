@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-11 11:01:24
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-12 18:15:33
+ * @LastEditTime: 2024-05-13 09:55:52
  */
 const { OPERATIONS } = require("../constant");
 const {
@@ -40,7 +40,7 @@ const getFirstLevelKeyValue = (actOptions) => {
 module.exports = actuator = async (actOptions) => {
   if (isEmptyObject(actOptions)) return;
   const { key, value } = getFirstLevelKeyValue(actOptions);
-
+  
   try {
     await actuatorEvents[key](value);
   } catch (error) {

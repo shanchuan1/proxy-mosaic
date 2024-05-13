@@ -75,6 +75,11 @@ const addServerList = [
     message: "enter the front resource path ",
     name: "deployDirectory",
   },
+  {
+    type: 'password',
+    name: 'password',
+    message: 'enter your password for connect to the server',
+  },
 ];
 
 const deployInquirer = (options) => {
@@ -144,3 +149,4 @@ module.exports = {
   deployInquirer,
   cleanInquirer,
 };
+

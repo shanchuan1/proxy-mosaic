@@ -2,12 +2,7 @@ const path = require("path");
 const chalk = require("chalk");
 const fsExtra = require("fs-extra");
 const Git = require("simple-git");
-const { readFromJs, appendToJs } = require("./temp/index");
-const {
-  validateRepos,
-  mergedObjectNewReposToTemp,
-  removeEmptyProperties,
-} = require("./utils");
+const { removeEmptyProperties } = require("./utils");
 const { spinner_fail } = require("./actuator/ora").processOra();
 
 const currentMosaicProjectPath =
@@ -22,7 +17,7 @@ const getCreatedProName = () => {
   return packName.split("_")[0];
 };
 
-// 1process.env.MOSAIC_CLI_CONTEXT
+// process.env.MOSAIC_CLI_CONTEXT
 
 class ReposConfigurator {
   constructor(paths, config) {
@@ -185,7 +180,6 @@ class ReposConfigurator {
       this.validateBuildMode();
     }
 
-    // arrayRepos.forEach((item) => this.appendToJs(item.name, item, "repos"));
     return this.commonRepos;
   }
 
@@ -225,68 +219,6 @@ const getResourceOutPut = (repos, packagesOutputPath) => {
     };
   }
 };
-
-/**
- * @description: 匹配得出仓库的数据结构
- * @param {*} paths 当前项目名称(name或者byName)
- * @param {*} branch 当前项目的需切换的分支
- * @return {*} arrayRepos
- */
-// const getReposConfig = (paths, branch) => {
-//   const mosaicConfig = require(`${process.env.MOSAIC_CLI_CONTEXT}\\mosaic.config.js`);
-//   const destProPath = `${process.env.MOSAIC_CLI_CONTEXT}\\apps`;
-//   // repos的校验
-//   console.log("🚀 ~ getReposConfig ~ destProPath:", destProPath);
-//   validateRepos(mosaicConfig.repos);
-//   const arrayRepos = mosaicConfig.repos
-//     .map((v, index) => {
-//       const item = {
-//         ...v,
-//         dest: `${destProPath}\\${v.name}`,
-//         byName: v.name.split("-")[v.name.split("-").length - 1],
-//       };
-//       if (index === mosaicConfig.repos.length - 1) {
-//         item.isLastRepo = true;
-//       }
-//       if (branch) {
-//         item.branch = branch;
-//       }
-//       appendToJs(item.name, item, "repos");
-//       return item;
-//     })
-//     .filter((v) => {
-//       if (Array.isArray(paths) && paths.length > 0 && paths[0] !== "all") {
-//         return paths.includes(v.name) || paths.includes(v.byName);
-//       }
-//       return v;
-//     });
-//   if (paths.length > arrayRepos.length) {
-//     // 说明存在还有未匹配到的项目, 输出未匹配上的appName
-//     const unmatchedProjectNames = validatePaths(paths, arrayRepos);
-//     unmatchedProjectNames?.forEach((v) => {
-//       console.log(`The project ${v} does not exist in the mosaic.config.js`);
-//     });
-//   }
-//   arrayRepos.forEach((item) => {
-//     appendToJs(item.name, item, "repos");
-//   });
-//   return arrayRepos;
-// };
-
-/**
- * @description: 校验命令传入的paths项目是否为配置文件内存在的
- * @param {*} projectNames  传入的项目名
- * @param {*} projectsList  配置文件内已配置的项目
- * @return {*} Boolean
- */
-// const validatePaths = (projectNames, projectsList) => {
-//   const matchedNames = new Set();
-//   for (const project of projectsList) {
-//     if (project.byName) matchedNames.add(project.byName);
-//     if (project.name) matchedNames.add(project.name);
-//   }
-//   return projectNames.filter((name) => !matchedNames.has(name));
-// };
 
 /**
  * @description: 获取仓库项目内package.json文件的scripts脚本内容
@@ -332,33 +264,6 @@ const getScriptsForBuild = (repos) => {
 };
 
 /**
- * @description: 校验所有app的所属框架
- * @return {*}
- */
-// const validateFrame = async () => {
-//   const repos = readFromJs("repos");
-//   const frames = ["vue", "react"];
-//   let scriptsMap = {};
-//   for (const key in repos) {
-//     scriptsMap[key] = {
-//       pureNative: "html",
-//     };
-//     const dependencies =
-//       require(`${repos[key].dest}\\package.json`).dependencies || {};
-//     for (const depName in dependencies) {
-//       if (frames.includes(depName)) {
-//         scriptsMap[key] = {
-//           frame: {
-//             [depName]: dependencies[depName],
-//           },
-//         };
-//       }
-//     }
-//   }
-//   await mergedObjectNewReposToTemp(scriptsMap, repos);
-// };
-
-/**
  * @description: 获取当前分支状态
  * @param {*} options
  * @param {*} repos
@@ -385,12 +290,4 @@ const getCurrentBranch = (repos) => {
   );
 };
 
-module.exports = {
-  // getReposConfig,
-  // validatePaths,
-  // getScriptsForBuild,
-  // validateFrame,
-};
-
 module.exports = ReposConfigurator;
-// module.exports.getScriptsForBuild = getScriptsForBuild

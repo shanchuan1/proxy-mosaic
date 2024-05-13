@@ -7,7 +7,7 @@ REMOTE_USER="$3"
 REMOTE_IP="$4"
 REMOTE_PATH="$5"
 
-echo Preparing to start deployment
+echo Preparing to start deployment ...
 
 # 本地压缩（使用tar并gzip压缩）
 cd "$LOCAL_PATH" && tar -czf "$ZIP_NAME.tar.gz" .
@@ -19,4 +19,4 @@ scp "$LOCAL_PATH\\$ZIP_NAME.tar.gz" "$REMOTE_USER@$REMOTE_IP:$REMOTE_PATH"
 # ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\" && rm \"$ZIP_NAME.tar.gz\""
 
 # 暂时不删除远程压缩包
-ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\"" 
+ssh "$REMOTE_USER@$REMOTE_IP" "cd $REMOTE_PATH && tar -xzf \"$ZIP_NAME.tar.gz\""

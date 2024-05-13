@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 11:13:07
+ * @LastEditors: 
+ * @LastEditTime: 2024-05-13 10:03:36
+ */
 const { spawn } = require("child_process");
 const path = require("path");
 const fse = require("fs-extra");
@@ -7,7 +14,6 @@ const execShellFunc = (options) => {
   const scriptPath = path.join(__dirname, "deploy.sh");
 
   const { localPath, zipName, remoteUser, remoteIP, remotePath } = options;
-  console.log('🚀 ~ execShellFunc ~ options:', options)
 
   const deletePath = `${localPath}/${zipName}.tar.gz`;
 
