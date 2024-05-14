@@ -3,11 +3,11 @@
  * @Author: shanchuan
  * @Date: 2024-05-10 10:34:32
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 18:05:43
+ * @LastEditTime: 2024-05-14 22:35:17
  */
 const path = require("path");
 const chalk = require("chalk")
-
+const validateProjectName = require('validate-npm-package-name')
 const writeFileTree = require("./utils/writeFileTree");
 
 process.env.MOSAIC_CLI_CONTEXT;
@@ -53,6 +53,7 @@ const create = async (options) => {
 
 const getCurrentProInfo = (options) => {
   const { projectName } = options;
+  getValidateProjectName(projectName)
   const cwd = process.cwd();
   const proNameByMosaic = `${projectName}_mosaic`;
   // const targetDir = path.resolve(cwd, projectName || ".");
@@ -72,6 +73,20 @@ const getCurrentProInfo = (options) => {
   };
 };
 
+// 校验输入的projectName是否合规
+const getValidateProjectName = (name) => {
+  const result = validateProjectName(name)
+  if (!result.validForNewPackages) {
+    console.error(chalk.red(`Invalid project name: "${name}"`))
+    result.errors && result.errors.forEach(err => {
+      console.error(chalk.red.dim('Error: ' + err))
+    })
+    result.warnings && result.warnings.forEach(warn => {
+      console.error(chalk.red.dim('Warning: ' + warn))
+    })
+    exit(1)
+  }
+}
 
 
 module.exports = (...args) => {
