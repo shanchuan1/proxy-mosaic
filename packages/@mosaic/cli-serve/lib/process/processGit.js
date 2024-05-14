@@ -3,19 +3,13 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-12 18:53:42
+ * @LastEditTime: 2024-05-14 18:10:18
  */
 const Git = require("simple-git");
 const chalk = require("chalk");
 const ReposConfigurator = require("../mosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
-const { execProcess } = require("../exec");
-const { readFromJs } = require("../temp/index");
-const {
-  // setPropertyInLast,
-  mergedObjectNewReposToTemp,
-  // getReposByPathsAndSetLast,
-} = require("../utils");
+const  execProcess  = require("./execProcess");
 const { spinner_start, spinner_succeed, spinner_fail } =
   require("../actuator/ora").processOra();
 
@@ -76,15 +70,11 @@ const OPERATION_FUNCTIONS = {
  * @param {*} branch
  * @return {*}
  */
-const processRepositories = async (operation, paths, branch) => {
+module.exports = processRepositories = async (operation, paths, branch) => {
   try {
     // 此branch只做切换分支
     const Repos = new ReposConfigurator(paths, { branch });
     const repos = await Repos.getRepos(operation);
-
-    console.log("🚀 ~ processRepositories ~ repos:", repos);
-
-    // return
 
     for (const repo of repos) {
       const isHasDir = await checkDir(repo.dest);
@@ -117,127 +107,4 @@ const processRepositories = async (operation, paths, branch) => {
     console.log("processRepositories ~ err:", err);
     process.exit(0);
   }
-};
-
-// let allReposBranches = null;
-// let specifyReposBranches = null;
-
-/**
- * @description: 获取所有仓库分支状态
- * @param {*} options
- * @param {*} isLog
- * @return {*}
- */
-// const getReposStatus = async (options, isLog = true) => {
-//   const repos = readFromJs("repos");
-//   // TODO: 仓库状态取值后续再考虑
-//   // const output = [...await getCurrentBranch(options, repos)].filter(Boolean);
-//   // console.log("The current status of the repos being queried\n", output);
-//   await getCurrentBranch(options, repos);
-//   if (isLog) {
-//     console.log(
-//       "The current status of the repos being queried\n",
-//       options.paths[0] === "all" ? allReposBranches : specifyReposBranches
-//     );
-//     process.exit(0);
-//   }
-// };
-
-/**
- * @description: 获取当前分支状态
- * @param {*} options
- * @param {*} repos
- * @return {*} 暂不设置返回值,保证控制台可以完整输出
- */
-// const getCurrentBranch = async (options, repos) => {
-//   const outputObj = {};
-//   return Promise.all(
-//     Object.entries(repos).map(async ([key, item]) => {
-//       const gitInstance = Git(item.dest);
-//       const branches = await gitInstance
-//         .branch(["-v", "--verbose"])
-//         .catch((err) => {
-//           console.error("Error fetching branch information:", err);
-//           process.exit(0);
-//         });
-
-//       if (branches) {
-//         outputObj[key] = {};
-//         outputObj[key].all = branches.all;
-//         outputObj[key].current = branches.current;
-//         if (options.paths[0] === "all" && item.isLastRepo) {
-//           allReposBranches = outputObj;
-//           let allReposBranchesObject = {};
-//           for (const key in allReposBranches) {
-//             allReposBranchesObject[key] = {
-//               branches: allReposBranches[key],
-//             };
-//           }
-//           await mergedObjectNewReposToTemp(allReposBranchesObject, repos);
-//           // TODO: 保留后续优化
-//           // return outputObj;
-//         } else {
-//           let obj = {};
-//           options.paths.forEach((v) => {
-//             const key = findMatchedKey(v, repos);
-//             obj[key] = outputObj[key];
-//           });
-//           if (item.isLastRepo) {
-//             specifyReposBranches = obj;
-//             let specifyReposBranchesObject = {};
-//             for (const key in specifyReposBranches) {
-//               specifyReposBranchesObject[key] = {
-//                 branches: specifyReposBranches[key],
-//               };
-//             }
-//             await mergedObjectNewReposToTemp(specifyReposBranchesObject, repos);
-//             // TODO: 保留后续优化
-//             // return obj;
-//           }
-//         }
-//       }
-//     })
-//   );
-// };
-
-/**
- * @description: 匹配app全名或别名
- * @param {*} targetValue
- * @param {*} obj
- * @return {*}
- */
-// const findMatchedKey = (targetValue, obj) => {
-//   for (const key in obj) {
-//     const item = obj[key];
-//     if (item.name === targetValue || item.byName === targetValue) {
-//       return key;
-//     }
-//   }
-//   return null;
-// };
-
-/**
- * @description: 校验当前分支是否统一
- * @return {*} referenceValue 分支别名
- */
-// const checkCurrentConsistency = async () => {
-//   await getReposStatus({ paths: ["all"] }, false);
-//   const repos = readFromJs("repos");
-//   const referenceValue = Object.values(repos)[0].branches.current;
-
-//   for (const key in repos) {
-//     if (repos.hasOwnProperty(key)) {
-//       if (repos[key].branches.current !== referenceValue) {
-//         return false;
-//       }
-//     }
-//   }
-
-//   return referenceValue.split("/").join("_");
-// };
-
-module.exports = {
-  processRepositories,
-  // getReposStatus,
-  // checkCurrentConsistency,
 };

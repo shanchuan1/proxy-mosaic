@@ -3,16 +3,16 @@
  * @Author: shanchuan
  * @Date: 2024-05-11 11:01:24
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-13 09:55:52
+ * @LastEditTime: 2024-05-14 18:18:44
  */
 const { OPERATIONS } = require("../constant");
 const {
   processRepositories, 
-  getReposStatus,
   processExecBuild,
   processExecDeploy,
-  processExecClean
-} = require('../process/index')
+  processExecClean,
+  processExecInspect
+} = require('../process')
 const { isEmptyObject } = require("../utils");
 
 
@@ -25,8 +25,8 @@ const actuatorEvents = {
   deploy: async (params) => await processExecDeploy(params),
   checkout: async (params) =>
     await processRepositories(OPERATIONS.CHECKOUT, params.paths, params.branch),
-  show_branch: async (params) => await getReposStatus(params),
   clean: async (params) => await processExecClean(params),
+  inspect: async (params) => await processExecInspect(params),
 };
 
 
@@ -40,7 +40,7 @@ const getFirstLevelKeyValue = (actOptions) => {
 module.exports = actuator = async (actOptions) => {
   if (isEmptyObject(actOptions)) return;
   const { key, value } = getFirstLevelKeyValue(actOptions);
-  
+
   try {
     await actuatorEvents[key](value);
   } catch (error) {

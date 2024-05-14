@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const chalk = require("chalk");
 const { readFromJs, appendToJs } = require("../temp/index");
 
 const chooseBuildModePrompt = {
@@ -76,7 +77,8 @@ const addServerList = [
     name: "deployDirectory",
   },
   {
-    type: 'password',
+    // type: 'password', 暂时明文密码输入
+    type: 'input',
     name: 'password',
     message: 'enter your password for connect to the server',
   },
@@ -91,7 +93,7 @@ const deployInquirer = (options) => {
       promptList = [deployServerList];
     } else {
       console.log(
-        "There is currently no server configuration. Please add a new server configuration."
+        `[TIP] ${chalk.yellow("There is currently no server configuration. Please add a new server configuration.")}`
       );
       options.add = true;
     }

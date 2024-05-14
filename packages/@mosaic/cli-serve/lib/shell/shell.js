@@ -44,3 +44,17 @@ const execShellFunc = (options) => {
 };
 
 module.exports = execShellFunc;
+
+
+/* 调用示例
+
+const shellOptions = {
+  localPath: packagesOutputPath,
+  zipName: `${path.basename(packagesOutputPath)}_${currentBranch.split('/').join('_')}`,
+  remoteUser: serverConfig.username,
+  remoteIP: serverConfig.ip,
+  remotePath: serverConfig.deployDirectory,
+};
+execShellFunc(shellOptions);
+
+*/

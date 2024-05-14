@@ -5,7 +5,7 @@
  * @LastEditors: Please set LastEditors
  * @LastEditTime: 2024-05-12 19:01:46
  */
-const { execProcess } = require("../exec");
+const execProcess = require("./execProcess");
 const { copyDirContents } = require("./processFile");
 const ReposConfigurator = require("../mosaicConfig");
 const { clearOperation } = require("../utils");
@@ -15,11 +15,28 @@ const packagesOutputPath = `${
 }\\packages`;
 
 /**
+ * @description: build之前清理操作
+ * @param {*} repos
+ * @return {*}
+ */
+const beforeExecBuild = async ({ paths, repos }) => {
+  if (paths[0] === "all") {
+    await clearOperation(`${packagesOutputPath}/*`);
+  } else {
+    for (const { packages } of repos) {
+      packages.packageInputPath &&
+        (await clearOperation(`${packages.packageInputPath}`));
+    }
+  }
+};
+
+
+/**
  * @description: app的统一build操作
  * @param {*} params
  * @return {*}
  */
-const processExecBuild = async (params) => {
+module.exports = processExecBuild = async (params) => {
   try {
     const {
       paths,
@@ -34,7 +51,6 @@ const processExecBuild = async (params) => {
 
     await beforeExecBuild({ paths, repos });
 
-    // return
 
     // 循环执行build
     for (const repo of repos) {
@@ -53,24 +69,4 @@ const processExecBuild = async (params) => {
     console.log("processExecBuild -- error:", error);
     process.exit(0);
   }
-};
-
-/**
- * @description: build之前清理操作
- * @param {*} repos
- * @return {*}
- */
-const beforeExecBuild = async ({ paths, repos }) => {
-  if (paths[0] === "all") {
-    await clearOperation(`${packagesOutputPath}/*`);
-  } else {
-    for (const { packages } of repos) {
-      packages.packageInputPath &&
-        (await clearOperation(`${packages.packageInputPath}`));
-    }
-  }
-};
-
-module.exports = {
-  processExecBuild,
 };

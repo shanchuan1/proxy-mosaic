@@ -1,8 +1,15 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 11:02:43
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-14 18:17:58
+ */
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 const chalk = require("chalk");
 const { spinner_start, spinner_succeed } =
-  require("./actuator/ora").processOra();
+  require("../actuator/ora").processOra();
 
 global.DEFAULT_PACKAGE_MANAGER = "yarn";
 
@@ -46,7 +53,7 @@ const execLog = async (command, repo) => {
 };
 
 /* 执行shell脚本 */
-const execProcess = async (command, repo) => {
+module.exports = execProcess = async (command, repo) => {
   try {
     const build_Mode = repo.buildMode;
     const currentBranch = repo.branches.current;
@@ -72,8 +79,4 @@ const execProcess = async (command, repo) => {
     console.log(" execProcess -- error:", error);
     process.exit(0);
   }
-};
-
-module.exports = {
-  execProcess,
 };

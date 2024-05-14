@@ -3,13 +3,12 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-13 18:52:26
+ * @LastEditTime: 2024-05-14 17:50:06
  */
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-const { appendToJs, readFromJs } = require("./temp/index");
 
 
 // mosaic配置项serverConfig的校验
@@ -65,50 +64,10 @@ const isEmptyObject = (obj) => {
 };
 
 
-
-// 合并两个对象相同key的值
-const mergeObjectsByKeys = (obj1, obj2) => {
-  const mergedObject = {};
-  for (const key in obj1) {
-    if (obj1.hasOwnProperty(key)) {
-      if (obj2.hasOwnProperty(key)) {
-        mergedObject[key] = {
-          ...obj2[key],
-          ...obj1[key],
-        };
-      } else {
-        mergedObject[key] = obj1[key];
-      }
-    }
-  }
-
-  for (const key in obj2) {
-    if (obj2.hasOwnProperty(key)) {
-      if (!mergedObject.hasOwnProperty(key)) {
-        mergedObject[key] = obj2[key];
-      }
-    }
-  }
-
-  return mergedObject;
-};
-
-// 合并仓库新状态
-const mergedObjectNewReposToTemp = (leftObj, rightObj) => {
-  return new Promise((resolve) => {
-    const mergedObject = mergeObjectsByKeys(leftObj, rightObj);
-    for (const key in mergedObject) {
-      appendToJs(key, mergedObject[key], "repos");
-    }
-    resolve(true)
-  })
-};
-
 // 删除操作
 const clearOperation = async (dest) => {
   await exec(`rm -rf ${dest}`)
 }
-
 
 
 // 过滤对象内空属性值的key
@@ -133,7 +92,6 @@ module.exports = {
   validateServerConfig,
   deleteFolderRecursive,
   isEmptyObject,
-  mergedObjectNewReposToTemp,
   clearOperation,
   removeEmptyProperties,
 };

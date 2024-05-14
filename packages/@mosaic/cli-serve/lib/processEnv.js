@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-11 13:49:05
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-11 14:20:25
+ * @LastEditTime: 2024-05-14 18:10:34
  */
 
 const path = require("path");
@@ -25,7 +25,6 @@ process.env.SHARED_DATA
 
 const setProcessEnv = (...arg) => {
     process.env.SHARED_DATA = JSON.stringify(...arg)
-    console.log('🚀 ~ setProcessEnv ~ process.env.SHARED_DATA:', process.env.SHARED_DATA)
 }
 
 const getProcessEnv = () => {

@@ -1,10 +1,13 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 11:05:15
+ * @LastEditors: 
+ * @LastEditTime: 2024-05-14 18:03:00
+ */
 const fs = require("fs");
 const path = require("path");
 const fileDataPath = path.resolve(__dirname, "../temp/tempFiles/data.js");
-const fileReposPath = path.resolve(
-  __dirname,
-  "../temp/tempFiles/reposStatus.js"
-);
 const serverConfigPath = path.resolve(
   __dirname,
   "../temp/tempFiles/serverConfig.js"
@@ -13,7 +16,6 @@ const buildModePath = path.resolve(__dirname, "../temp/tempFiles/buildMode.js");
 
 const fileMap = {
   data: fileDataPath,
-  repos: fileReposPath,
   server: serverConfigPath,
   build: buildModePath,
 };

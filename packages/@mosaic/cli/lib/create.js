@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-10 10:34:32
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-13 09:50:19
+ * @LastEditTime: 2024-05-14 18:05:43
  */
 const path = require("path");
 const chalk = require("chalk")
@@ -27,7 +27,7 @@ const create = async (options) => {
       build: "mosaic-serve build",
       deploy: "mosaic-serve deploy -c",
       checkout: "mosaic-serve checkout ",
-      inspect: "mosaic-serve inspect ",
+      inspect: "mosaic-serve inspect -b",
     },
     devDependencies: {},
     // ...resolvePkg(context)

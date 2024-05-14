@@ -110,22 +110,14 @@ program
   .description("checkout a branch in your project powered by proxy-mosaic")
   .action((branch, projects) => getCommandParams("checkout", projects, branch));
 
-program
-  .command("show")
-  .command("branch")
-  .arguments("[projects...]", "The list of projects to show branches for")
-  .description("show a branch in your project powered by proxy-mosaic")
-  .action((projects) => {
-    getCommandParams("show_branch", projects, {});
-  });
 
 program
   .command("inspect")
-  .command("branch")
   .arguments("[projects...]", "The list of projects to show branches for")
-  .description("show a branch in your project powered by proxy-mosaic")
-  .action((projects) => {
-    getCommandParams("inspect", projects, {});
+  .option("-b, --branch ", "The branches for the apps")
+  .description("inspect the apps info by proxy-mosaic")
+  .action((projects, options) => {
+    getCommandParams("inspect", projects, options);
   });
 
 // 获取特定的交互

@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 11:02:43
+ * @LastEditors: 
+ * @LastEditTime: 2024-05-14 18:31:03
+ */
 const path = require("path");
 const chalk = require("chalk");
 const fsExtra = require("fs-extra");
@@ -184,7 +191,17 @@ class ReposConfigurator {
   }
 
   // 查看当前所有app的信息
-  async show() {}
+  async show(options) {
+    const repos = await this.getRepos()
+    // 只查看分支状态
+    if (options.branch) {
+      return repos.reduce((array, repo) => {
+        array[repo.name] = repo.branches
+        return array
+      }, {})
+    }
+    return repos
+  }
 }
 
 /**
