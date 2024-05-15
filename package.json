@@ -29,7 +29,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "ISC",
   "dependencies": {},
   "engines": {
     "node": ">= 14.0.0"

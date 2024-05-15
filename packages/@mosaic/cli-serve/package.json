@@ -1,9 +1,9 @@
 {
   "name": "@mosaic/cli-serve",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "local service for mosaic projects",
   "homepage": "",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "mosaic-serve": "bin/mosaic-serve.js"
   },
@@ -47,5 +47,5 @@
   "engines": {
     "node": "^12.0.0 || >= 14.0.0"
   },
-  "gitHead": "91d439e54009fc1806f38ebbf5740636f901a374"
+  "gitHead": "b7e2adc71e0cd106a1c00972c299f45253de9a1f"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@mosaic/cli",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "This scaffold is used to create a proxy mosaic project",
   "author": {
     "name": "shanchuan",
@@ -15,7 +15,7 @@
     "url": "https://github.com/shanchuan1/proxy-mosaic/issues"
   },
   "homepage": "",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "mosaic": "bin/mosaic.js"
   },
@@ -53,5 +53,5 @@
   "engines": {
     "node": "^12.0.0 || >= 14.0.0"
   },
-  "gitHead": "91d439e54009fc1806f38ebbf5740636f901a374"
+  "gitHead": "b7e2adc71e0cd106a1c00972c299f45253de9a1f"
 }
