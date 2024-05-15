@@ -7,7 +7,8 @@
     "packages/test/*"
   ],
   "scripts": {
-    "clear": "rimraf "
+    "start": "dumi dev",
+    "docs:build": "dumi build"
   },
   "author": {
     "name": "shanchuan",
@@ -29,12 +30,12 @@
     "access": "public"
   },
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "engines": {
     "node": ">= 14.0.0"
   },
   "devDependencies": {
+    "dumi": "^2.3.4",
     "lerna": "^4.0.0"
   }
 }
