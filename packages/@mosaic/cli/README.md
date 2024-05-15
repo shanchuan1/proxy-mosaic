@@ -1,11 +1,8 @@
-# `mosaic-cli`
+# @mosaic/cli
 
-> TODO: description
-
-## Usage
-
+``` sh
+npm install -g @mosaic/cli
+mosaic create project
 ```
-const mosaicCli = require('mosaic-cli');
 
-// TODO: DEMONSTRATE API
-```
+[Full Docs](https://github.com/shanchuan1/proxy-mosaic)

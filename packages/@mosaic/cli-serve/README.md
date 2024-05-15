@@ -1,11 +1,5 @@
-# `mosaic-serve`
+# @mosaic/cli-serve
 
-> TODO: description
+> serve for mosaic project
 
-## Usage
-
-```
-const mosaicServe = require('mosaic-serve');
-
-// TODO: DEMONSTRATE API
-```
+[Full Docs](https://github.com/shanchuan1/proxy-mosaic)

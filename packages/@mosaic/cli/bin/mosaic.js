@@ -6,6 +6,7 @@ const leven = require('leven')
 const packageJson = require("../package.json");
 const requiredVersion = require('../package.json').engines.node
 const program = new Command();
+const semver = require('semver')
 
 function checkNodeVersion (wanted, id) {
   if (!semver.satisfies(process.version, wanted, { includePrerelease: true })) {
