@@ -1,4 +1,4 @@
-# @mosaic/cli-serve
+# @proxy-mosaic/cli-serve
 
 > serve for mosaic project
 

@@ -2,7 +2,7 @@
   "useWorkspaces": true,
   "npmClient": "yarn",
   "packages": [
-    "packages/@mosaic/cli*"
+    "packages/@proxy-mosaic/cli*"
   ],
-  "version": "0.0.1"
+  "version": "0.0.0"
 }

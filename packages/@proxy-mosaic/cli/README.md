@@ -1,7 +1,7 @@
-# @mosaic/cli
+# @proxy-mosaic/cli
 
 ``` sh
-npm install -g @mosaic/cli
+npm install -g @proxy-mosaic/cli
 mosaic create project
 ```
 

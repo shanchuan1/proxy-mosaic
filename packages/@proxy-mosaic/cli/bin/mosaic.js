@@ -18,7 +18,7 @@ function checkNodeVersion (wanted, id) {
   }
 }
 
-checkNodeVersion(requiredVersion, '@mosaic/cli')
+checkNodeVersion(requiredVersion, '@proxy-mosaic/cli')
 
 program.option("-v, --version", "output the version number", () => {
   console.log(`version: ${packageJson.version}`);

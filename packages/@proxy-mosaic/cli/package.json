@@ -1,6 +1,6 @@
 {
-  "name": "@mosaic/cli",
-  "version": "0.0.1",
+  "name": "@proxy-mosaic/cli",
+  "version": "0.0.0",
   "description": "This scaffold is used to create a proxy mosaic project",
   "author": {
     "name": "shanchuan",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shanchuan1/proxy-mosaic",
-    "directory": "packages/@mosaic/cli"
+    "directory": "packages/@proxy-mosaic/cli"
   },
   "bugs": {
     "url": "https://github.com/shanchuan1/proxy-mosaic/issues"

@@ -33,7 +33,7 @@ const create = async (options) => {
     devDependencies: {},
   };
 
-  const deps = ["@mosaic/cli-serve"];
+  const deps = ["@proxy-mosaic/cli-serve"];
   deps.forEach((dep) => {
     version = packageJson;
     pkg.devDependencies[dep] = version;

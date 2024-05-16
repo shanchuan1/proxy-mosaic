@@ -3,7 +3,7 @@
   "description": "🛠️ One click (start, package, deploy) proxy tool for front-end application groups",
   "private": true,
   "workspaces": [
-    "packages/@mosaic/*",
+    "packages/@proxy-mosaic/*",
     "packages/test/*"
   ],
   "scripts": {

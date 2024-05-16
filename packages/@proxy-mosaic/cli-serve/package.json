@@ -1,6 +1,6 @@
 {
-  "name": "@mosaic/cli-serve",
-  "version": "0.0.1",
+  "name": "@proxy-mosaic/cli-serve",
+  "version": "0.0.0",
   "description": "local service for mosaic projects",
   "homepage": "",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shanchuan1/proxy-mosaic",
-    "directory": "packages/@mosaic/cli-serve"
+    "directory": "packages/@proxy-mosaic/cli-serve"
   },
   "bugs": {
     "url": "https://github.com/shanchuan1/proxy-mosaic/issues"

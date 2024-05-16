@@ -16,9 +16,9 @@ proxy-mosaic 是一个本地化前端工程的代理服务工具,包括但不限
 安装：
 
 ```bash
-npm install -g @mosaic/cli
+npm install -g @proxy-mosaic/cli
 # OR
-yarn global add @mosaic/cli
+yarn global add @proxy-mosaic/cli
 ```
 
 创建一个代理工程：
