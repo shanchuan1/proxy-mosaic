@@ -1,4 +1,3 @@
 node_modules
 .dumi
 *.log
-package-lock.json
