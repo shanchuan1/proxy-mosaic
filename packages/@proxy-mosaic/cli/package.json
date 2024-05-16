@@ -1,6 +1,6 @@
 {
   "name": "@proxy-mosaic/cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This scaffold is used to create a proxy mosaic project",
   "author": {
     "name": "shanchuan",
