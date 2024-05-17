@@ -1,6 +1,6 @@
 {
   "name": "@proxy-mosaic/cli-shared-utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "detaching shared dependencies for the @proxy-mosaic packages",
   "keywords": [
     "shared",
@@ -31,12 +31,12 @@
   },
   "dependencies": {
     "chalk": "2.4.2",
-    "semver": "7.3.4",
-    "strip-ansi": "6.0.0",
     "execa": "1.0.0",
-    "read-pkg": "5.1.1",
+    "lru-cache": "6.0.0",
     "ora": "5.4.1",
-    "lru-cache": "6.0.0"
+    "read-pkg": "5.1.1",
+    "semver": "7.3.4",
+    "strip-ansi": "6.0.0"
   },
   "publishConfig": {
     "access": "public"

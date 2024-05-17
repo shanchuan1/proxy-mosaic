@@ -1,6 +1,6 @@
 {
   "name": "@proxy-mosaic/cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "This scaffold is used to create a proxy mosaic project",
   "author": {
     "name": "shanchuan",
@@ -34,7 +34,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@proxy-mosaic/cli-shared-utils": "^0.0.4",
+    "@proxy-mosaic/cli-shared-utils": "^0.0.5",
     "commander": "8.0.0",
     "debug": "4.1.0",
     "download-git-repo": "^3.0.2",
