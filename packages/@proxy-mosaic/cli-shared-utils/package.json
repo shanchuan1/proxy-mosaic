@@ -1,6 +1,6 @@
 {
   "name": "@proxy-mosaic/cli-shared-utils",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "detaching shared dependencies for the @proxy-mosaic packages",
   "keywords": [
     "shared",

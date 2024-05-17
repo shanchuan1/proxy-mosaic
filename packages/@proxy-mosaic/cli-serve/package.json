@@ -1,6 +1,6 @@
 {
   "name": "@proxy-mosaic/cli-serve",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "local service for mosaic projects",
   "license": "MIT",
   "bin": {
@@ -31,7 +31,7 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@proxy-mosaic/cli-shared-utils": "^0.0.5",
+    "@proxy-mosaic/cli-shared-utils": "^0.0.6",
     "archiver": "^7.0.1",
     "commander": "8.0.0",
     "dotenv": "10.0.0",
