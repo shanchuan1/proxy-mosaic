@@ -5,7 +5,7 @@
  * @LastEditors: Please set LastEditors
  * @LastEditTime: 2024-05-14 18:31:20
  */
-const chalk = require("chalk")
+const { chalk } = require("@proxy-mosaic/cli-shared-utils");
 const log = console.log;
 
 const commonLog = (front, end) => {

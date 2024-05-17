@@ -7,7 +7,7 @@
  */
 const fs = require("fs-extra");
 const path = require("path");
-const chalk = require("chalk")
+const { chalk } = require('@proxy-mosaic/cli-shared-utils')
 
 function deleteRemovedFiles(directory, newFiles, previousFiles) {
   // get all files that are not in the new filesystem and are still existing

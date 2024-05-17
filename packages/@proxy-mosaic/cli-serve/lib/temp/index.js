@@ -2,12 +2,11 @@
  * @Description: 
  * @Author: shanchuan
  * @Date: 2024-05-11 11:05:15
- * @LastEditors: 
- * @LastEditTime: 2024-05-14 18:03:00
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-17 17:11:52
  */
 const fs = require("fs");
 const path = require("path");
-const fileDataPath = path.resolve(__dirname, "../temp/tempFiles/data.js");
 const serverConfigPath = path.resolve(
   __dirname,
   "../temp/tempFiles/serverConfig.js"
@@ -15,28 +14,27 @@ const serverConfigPath = path.resolve(
 const buildModePath = path.resolve(__dirname, "../temp/tempFiles/buildMode.js");
 
 const fileMap = {
-  data: fileDataPath,
   server: serverConfigPath,
   build: buildModePath,
 };
 
 // 尝试读取并解析JS文件中的对象
-const readFromJs = (type) => {
+const loadTempData = (type) => {
   try {
     const jsData = fs.readFileSync(fileMap[type], "utf8");
     // 尝试以JSON格式解析
     const data = JSON.parse(jsData.trim());
     return data;
   } catch (error) {
-    console.log('readFromJs ~ error:', error)
+    console.log('loadTempData ~ error:', error)
     return {}; // 初始化为空对象
   }
 };
 
 // 将数据追加到JS文件中的对象（假设为JSON格式）
-const appendToJs = (key, value, type) => {
+const saveTempData = (key, value, type) => {
   // 读取现有对象
-  let existingData = readFromJs(type);
+  let existingData = loadTempData(type);
 
   // 将新的数据项追加到对象中
   existingData[key] = value;
@@ -47,9 +45,9 @@ const appendToJs = (key, value, type) => {
 };
 
 // 删除js文件中的对象
-const deleteFromJs = (key, type) => {
+const deleteTempData = (key, type) => {
   // 读取现有对象
-  let existingData = readFromJs(type);
+  let existingData = loadTempData(type);
 
   if (!Object.keys(existingData).length) {
     return
@@ -69,7 +67,7 @@ const deleteFromJs = (key, type) => {
 };
 
 module.exports = {
-  readFromJs,
-  appendToJs,
-  deleteFromJs,
+  loadTempData,
+  saveTempData,
+  deleteTempData,
 };

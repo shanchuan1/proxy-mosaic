@@ -1,44 +1,49 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
+const { chalk, semver } = require("@proxy-mosaic/cli-shared-utils");
+const dotenv = require("dotenv");
+const dotenvExpand = require("dotenv-expand");
+
+checkNodeVersion(
+  require("../package.json").engines.node
+);
+// 校验node执行版本
+function checkNodeVersion(
+  wanted = requiredVersion,
+  id = "@proxy-mosaic/cli-serve"
+) {
+  if (!semver.satisfies(process.version, wanted, { includePrerelease: true })) {
+    console.log(chalk.red(
+      'You are using Node ' + process.version + ', but this version of ' + id +
+      ' requires Node ' + wanted + '.\nPlease upgrade your Node version.'
+    ))
+    process.exit(1)
+  }
+}
+
+const { areAllEnvVarsDefined } = require("../lib/utils");
 const packageJson = require("../package.json");
-const {
-  buildInquirer,
-  deployInquirer,
-  cleanInquirer,
-} = require("../lib/actuator/inquirer");
 const actuator = require("../lib/actuator");
-const chalk = require("chalk");
+const { loadTempData } = require("../lib/temp");
+
+// 加载 dotenv 文件
+dotenvExpand(dotenv.config());
 
 process.env.MOSAIC_CLI_CONTEXT = process.cwd();
 
 const { setProcessEnv } = require("../lib/processEnv");
 
-// const leven = require('leven')
 const program = new Command();
-
-// 校验node执行版本
-const checkNodeVersion = (wanted = requiredVersion, id = "proxy-mosaic") => {
-  if (process.version < wanted) {
-    console.log(
-      chalk.red(
-        "You are using Node " +
-          process.version +
-          ", but this version of " +
-          id +
-          " requires Node " +
-          wanted +
-          ".\nPlease upgrade your Node version."
-      )
-    );
-    process.exit(0);
-  }
-};
-
 
 setProcessEnv({
   cwd: process.cwd(),
 });
 
+const {
+  buildInquirer,
+  deployInquirer,
+  cleanInquirer,
+} = require("../lib/actuator/inquirer");
 // 先定义全局选项
 program.option("-v, --version", "output the version number", () => {
   console.log(`version: ${packageJson.version}`);
@@ -48,14 +53,14 @@ program.option("-v, --version", "output the version number", () => {
 // 定义命令行选项和参数
 program
   .command("generate [paths...]")
-  .description("generate the specify project powered by proxy-mosaic")
+  .description("generate the apps powered by proxy-mosaic")
   .option("-p, --path <path>", "Specify the project you need to clone")
   .option("-l, --log", "The console expand dependent output")
   .action((paths, options) => getCommandParams("generate", paths, options));
 
 program
   .command("build [paths...]")
-  .description("build a new project resource re powered by proxy-mosaic")
+  .description("build the apps resource re powered by proxy-mosaic")
   .option("-d, --dev ", "development mode")
   .option("-t, --test ", "test mode")
   .option("-s, --sml ", "simulation mode")
@@ -81,7 +86,7 @@ program
 
 program
   .command("deploy [paths...]")
-  .description("deploy a new project resource powered by proxy-mosaic")
+  .description("deploy the apps resource powered by proxy-mosaic")
   .option("-c, --config ", "configs for the server")
   .option("-a, --add ", "add the configs for the server")
   .action(async (paths, options) => {
@@ -92,24 +97,33 @@ program
       );
       process.exit(0);
     }
-    const res = await getInquirerOperation("deploy", options);
-    getCommandParams("deploy", paths, { ...options, serverConfig: res });
+    let serverConfig = {};
+    const server = loadTempData("server");
+    areAllEnvVarsDefined();
+    if (
+      Object.keys(server).length > 1 &&
+      Object.keys(server).includes(process.env.IP)
+    ) {
+      serverConfig = await getInquirerOperation("deploy", options);
+    } else {
+      serverConfig = {
+        username: process.env.SERVER_NAME,
+        host: process.env.IP,
+        remotePath: process.env.DEPLOY_PATH,
+        password: process.env.PASSWORD,
+      };
+    }
+    getCommandParams("deploy", paths, { ...options, serverConfig });
   });
 
 program
   .command("clean [paths...]")
-  .description("deploy a new project resource powered by proxy-mosaic")
+  .description("clean the apps powered by proxy-mosaic")
   .option("-c, --config ", "configs for the server")
   .action(async (paths, options) => {
     const res = await getInquirerOperation("clean", options);
     getCommandParams("clean", paths, { ...options, cleanConfig: res });
   });
-
-program
-  .command("checkout <branch> [projects...]")
-  .description("checkout a branch in your project powered by proxy-mosaic")
-  .action((branch, projects) => getCommandParams("checkout", projects, branch));
-
 
 program
   .command("inspect")
@@ -119,6 +133,32 @@ program
   .action((projects, options) => {
     getCommandParams("inspect", projects, options);
   });
+
+program
+  .command("git")
+  .description("Proxy-mosaic git commands for managing your applications.")
+  .addCommand(checkoutCommand())
+  .addCommand(pullCommand());
+
+function checkoutCommand() {
+  return program
+    .command("checkout <branch> [projects...]")
+    .description("Checkout a branch in your apps powered by proxy-mosaic.")
+    .action((branch, projects) => {
+      console.log(`Checking out branch "${branch}" in projects:`, projects);
+      getCommandParams("checkout", projects, branch);
+    });
+}
+
+function pullCommand() {
+  return program
+    .command("pull [projects...]")
+    .description('Performs a "git pull" in your apps managed by proxy-mosaic.')
+    .action((projects) => {
+      console.log(`Executing git pull in projects:`, projects);
+      getCommandParams("pull", projects, {});
+    });
+}
 
 // 获取特定的交互
 const getInquirerOperation = async (type, options) => {
@@ -132,8 +172,8 @@ const getInquirerOperation = async (type, options) => {
 
 // 通用获取命令参数
 const getCommandParams = (type, paths, options) => {
-  const { log } = options
-  process.env.IS_LOG_STDOUT = JSON.stringify({ log })
+  const { log } = options;
+  process.env.IS_LOG_STDOUT = JSON.stringify({ log });
   if (!paths.length) {
     paths = ["all"];
   }
@@ -157,7 +197,11 @@ const getCommandParams = (type, paths, options) => {
       delete commandArgs[type].options.configBuildMode;
   }
 
-  console.log(`mosaic ${chalk.blue('notice')} ${chalk.magenta('mosaic-serve')} v${packageJson.version}`);
+  console.log(
+    `mosaic ${chalk.blue("notice")} ${chalk.magenta("mosaic-serve")} v${
+      packageJson.version
+    }`
+  );
   // 统一执行器
   actuator(commandArgs);
 };

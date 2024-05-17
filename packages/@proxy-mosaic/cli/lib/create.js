@@ -3,16 +3,16 @@
  * @Author: shanchuan
  * @Date: 2024-05-10 10:34:32
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-15 16:30:25
+ * @LastEditTime: 2024-05-17 17:26:31
  */
 const path = require("path");
-const chalk = require("chalk");
 const validateProjectName = require("validate-npm-package-name");
+const { chalk, hasYarn, hasPnpm3OrLater } = require('@proxy-mosaic/cli-shared-utils')
 const writeFileTree = require("./utils/writeFileTree");
-const {hasYarn, hasPnpm3OrLater } = require('./utils/env')
 const PackageManager = require('./utils/projectPackageManager')
 const {clearConsole } = require('./utils')
 const packageJson = require("../package.json").version;
+
 
 process.env.MOSAIC_CLI_CONTEXT;
 
@@ -25,9 +25,10 @@ const create = async (options) => {
     private: true,
     scripts: {
       gen: "mosaic-serve generate",
+      pull: "mosaic-serve git pull",
+      checkout: "mosaic-serve git checkout",
       build: "mosaic-serve build",
       deploy: "mosaic-serve deploy -c",
-      checkout: "mosaic-serve checkout",
       inspect: "mosaic-serve inspect -b",
     },
     devDependencies: {},
@@ -44,6 +45,8 @@ const create = async (options) => {
     packages: null,
     "package.json": JSON.stringify(pkg, null, 2),
     "mosaic.config.js": require("../template/mosaic.config.js"),
+    ".env": require("../template/env.js"),
+    ".gitignore": require("../template/gitignore.js"),
   });
   console.log(`mosaic ${chalk.green.bold("success")} Initialized Mosaic files`);
 

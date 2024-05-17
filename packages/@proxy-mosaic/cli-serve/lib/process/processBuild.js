@@ -3,12 +3,13 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-12 19:01:46
+ * @LastEditTime: 2024-05-17 13:47:45
  */
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const execProcess = require("./execProcess");
 const { copyDirContents } = require("./processFile");
 const ReposConfigurator = require("../mosaicConfig");
-const { clearOperation } = require("../utils");
 
 const packagesOutputPath = `${
   process.env.MOSAIC_CLI_CONTEXT || process.cwd()
@@ -21,15 +22,14 @@ const packagesOutputPath = `${
  */
 const beforeExecBuild = async ({ paths, repos }) => {
   if (paths[0] === "all") {
-    await clearOperation(`${packagesOutputPath}/*`);
+    await exec(`rm -rf ${packagesOutputPath}/*`);
   } else {
     for (const { packages } of repos) {
       packages.packageInputPath &&
-        (await clearOperation(`${packages.packageInputPath}`));
+        (await exec(`rm -rf ${packages.packageInputPath}`));
     }
   }
 };
-
 
 /**
  * @description: app的统一build操作
@@ -47,7 +47,6 @@ module.exports = processExecBuild = async (params) => {
       buildMode: configBuildMode || mode,
     });
     let repos = await Repos.getRepos("build");
-    console.log("🚀 ~ processExecBuild ~ repos:", repos);
 
     await beforeExecBuild({ paths, repos });
 

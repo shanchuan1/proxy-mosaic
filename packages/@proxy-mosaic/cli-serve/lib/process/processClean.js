@@ -6,19 +6,17 @@
  * @LastEditTime: 2024-05-09 18:29:36
  */
 const fs = require("fs");
-const {
-  clearOperation,
-  getReposByPathsAndSetLast,
-} = require("../utils");
-const { deleteFromJs, readFromJs } = require("../temp/index");
-const { spinner_start, spinner_succeed } =
-  require("../actuator/ora").processOra();
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
+const { deleteTempData, loadTempData } = require("../temp/index");
+const { processOra } = require("@proxy-mosaic/cli-shared-utils");
+const { spinner_start, spinner_succeed } = processOra();
 
 // 执行清除
 const processExecClean = async (configs) => {
   try {
     const { paths, options } = configs;
-    const dataTemp = readFromJs("data");
+    const dataTemp = loadTempData("data");
     let repos = [];
 
     if (paths.length > 0) {
@@ -74,13 +72,13 @@ const cleanFunc = async (cleanOptions) => {
       `Clearing ${(isOutPut && "resource") || "app"} ${name} ...\n`
     );
     if (dest) {
-      await clearOperation(dest);
-      deleteFromJs(name, "repos");
+      await exec(`rm -rf ${dest}`);
+      deleteTempData(name, "repos");
       spinner_succeed(
         `${(isOutPut && "Resource") || "App"} ${name} cleared successfully`
       );
-      isOutPut && deleteFromJs(name, "data");
-      isOutPut && isLastRepo && deleteFromJs("data") && process.exit(0);
+      isOutPut && deleteTempData(name, "data");
+      isOutPut && isLastRepo && deleteTempData("data") && process.exit(0);
     }
   } catch (error) {
     console.log("cleanFunc ~ error:", error);

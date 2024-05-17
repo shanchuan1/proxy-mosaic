@@ -1,8 +1,14 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-15 15:02:02
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-16 17:49:29
+ */
 const readline = require("readline");
-const execa = require("execa");
-const debug = require('debug')('mosaic-cli:install')
 const EventEmitter = require('events')
-
+const { chalk, execa } = require('@proxy-mosaic/cli-shared-utils')
+const debug = require('debug')('mosaic-cli:install')
 
 class InstallProgress extends EventEmitter {
     constructor () {

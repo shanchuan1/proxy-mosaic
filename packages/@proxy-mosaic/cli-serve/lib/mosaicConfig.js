@@ -1,16 +1,16 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: shanchuan
  * @Date: 2024-05-11 11:02:43
- * @LastEditors: 
- * @LastEditTime: 2024-05-14 18:31:03
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-17 14:09:54
  */
 const path = require("path");
-const chalk = require("chalk");
 const fsExtra = require("fs-extra");
 const Git = require("simple-git");
 const { removeEmptyProperties } = require("./utils");
-const { spinner_fail } = require("./actuator/ora").processOra();
+const { chalk, processOra } = require("@proxy-mosaic/cli-shared-utils");
+const { spinner_fail } = processOra();
 
 const currentMosaicProjectPath =
   process.env.MOSAIC_CLI_CONTEXT || process.cwd();
@@ -24,7 +24,6 @@ const getCreatedProName = () => {
   return packName.split("_")[0];
 };
 
-// process.env.MOSAIC_CLI_CONTEXT
 
 class ReposConfigurator {
   constructor(paths, config) {
@@ -59,6 +58,12 @@ class ReposConfigurator {
   // mosaic配置项repos的校验
   validateRepos(repos) {
     for (const repo of repos) {
+      if (repo.url === "Git repository URL" || repo.name === "Project name") {
+        console.log(
+          `${chalk.red("[ERROR]")} Please check this mosaic.config.js that repos requires configuration!`
+        );
+        process.exit(0)
+      }
       if (
         typeof repo.url !== "string" ||
         repo.url.trim() === "" ||
@@ -192,15 +197,15 @@ class ReposConfigurator {
 
   // 查看当前所有app的信息
   async show(options) {
-    const repos = await this.getRepos()
+    const repos = await this.getRepos();
     // 只查看分支状态
     if (options.branch) {
       return repos.reduce((array, repo) => {
-        array[repo.name] = repo.branches
-        return array
-      }, {})
+        array[repo.name] = repo.branches;
+        return array;
+      }, {});
     }
-    return repos
+    return repos;
   }
 }
 

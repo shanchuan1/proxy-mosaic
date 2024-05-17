@@ -1,7 +1,15 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 11:01:24
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-16 18:29:32
+ */
 const ora = require("ora");
 const chalk = require("chalk");
 
-const processOra = () => {
+
+exports.processOra = () => {
   const Spinner = ora();
   const colorList = [
     "red",
@@ -30,7 +38,5 @@ const processOra = () => {
     spinner_fail: (text) => Spinner.fail(chalk.red(`${text}`)),
   };
 };
+  
 
-module.exports = {
-  processOra,
-};

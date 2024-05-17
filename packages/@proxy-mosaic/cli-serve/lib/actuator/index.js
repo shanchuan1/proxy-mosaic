@@ -21,6 +21,8 @@ const { isEmptyObject } = require("../utils");
 const actuatorEvents = {
   generate: async (params) =>
     await processRepositories(OPERATIONS.CLONE, params.paths),
+  pull: async (params) =>
+    await processRepositories(OPERATIONS.PULL, params.paths),
   build: async (params) => await processExecBuild(params),
   deploy: async (params) => await processExecDeploy(params),
   checkout: async (params) =>

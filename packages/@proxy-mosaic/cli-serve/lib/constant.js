@@ -12,5 +12,5 @@ const FRAMECONFIG = {
 
 module.exports = {
     OPERATIONS,
-    FRAMECONFIG
+    FRAMECONFIG,
 }

@@ -3,12 +3,11 @@
  * @Author: shanchuan
  * @Date: 2024-05-11 13:49:05
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 18:10:34
+ * @LastEditTime: 2024-05-17 14:14:56
  */
 
 const path = require("path");
 
-// 执行命令的当前路径
 // console.log('🚀 ~ global.cwd:', path.resolve(process.cwd(), 'mosaic.config.js'))
 // console.log('🚀 ~ global.cwd:', path.join(process.cwd(), 'mosaic.config.js'))
 // console.log('process.env.MOSAIC_CLI_CONTEXT', process.env.MOSAIC_CLI_CONTEXT);

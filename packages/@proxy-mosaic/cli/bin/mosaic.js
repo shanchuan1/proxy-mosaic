@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
 const minimist = require("minimist");
-const chalk = require("chalk")
+const { chalk, semver } = require('@proxy-mosaic/cli-shared-utils')
 const leven = require('leven')
 const packageJson = require("../package.json");
 const requiredVersion = require('../package.json').engines.node
 const program = new Command();
-const semver = require('semver')
+
 
 function checkNodeVersion (wanted, id) {
   if (!semver.satisfies(process.version, wanted, { includePrerelease: true })) {

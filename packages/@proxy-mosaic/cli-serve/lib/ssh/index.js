@@ -1,16 +1,17 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: shanchuan
  * @Date: 2024-05-13 10:26:22
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 18:22:51
+ * @LastEditTime: 2024-05-17 17:56:19
  */
 const fs = require("fs");
 const archiver = require("archiver");
 const path = require("path");
-const chalk = require("chalk");
 const Client = require("ssh2").Client;
-const { spinner_succeed } = require("../actuator/ora").processOra();
+const { chalk, processOra } = require("@proxy-mosaic/cli-shared-utils");
+const { spinner_succeed } = processOra();
+const { saveTempData } = require("../temp");
 
 class SSHLoader {
   constructor(options) {
@@ -213,7 +214,16 @@ class SSHLoader {
       ) || [this.deployAllApps()];
 
       await Promise.all(deploymentTasks);
-
+      saveTempData(
+        this.host,
+        {
+          host: this.host,
+          remotePath: this.remotePath,
+          username: this.username,
+          password: this.password,
+        },
+        "server"
+      );
       spinner_succeed(
         "All deployment operations have been successfully executed!"
       );

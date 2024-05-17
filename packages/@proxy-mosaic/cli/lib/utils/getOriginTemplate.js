@@ -1,7 +1,14 @@
+/*
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-11 10:55:33
+ * @LastEditors: 
+ * @LastEditTime: 2024-05-16 18:41:14
+ */
 const downgit = require("download-git-repo");
 const isOnline = require("is-online");
-const { spinner_start, spinner_succeed, spinner_fail } =
-  require("./ora").processOra();
+const { processOra } = require("@proxy-mosaic/cli-shared-utils");
+const { spinner_start, spinner_succeed, spinner_fail } = processOra();
 
 const getOriginTemplate = async ({
   currentLocalPathCWD: destDir,
@@ -29,6 +36,6 @@ const getOriginTemplate = async ({
   });
 };
 
-module.exports = async(options) =>{
-    (await isOnline()) && getOriginTemplate(options)
+module.exports = async (options) => {
+  (await isOnline()) && getOriginTemplate(options);
 };

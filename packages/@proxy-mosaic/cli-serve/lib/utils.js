@@ -3,22 +3,20 @@
  * @Author: shanchuan
  * @Date: 2024-04-19 21:02:10
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 17:50:06
+ * @LastEditTime: 2024-05-17 18:20:30
  */
 const fs = require("fs");
 const path = require("path");
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
-
+const { chalk } = require("@proxy-mosaic/cli-shared-utils");
 
 // mosaic配置项serverConfig的校验
 const validateServerConfig = (serverConfig) => {
   if (
     typeof serverConfig.username !== "string" ||
     serverConfig.username.trim() === "" ||
-    !isValidIP(serverConfig.ip) ||
-    typeof serverConfig.deployDirectory !== "string" ||
-    serverConfig.deployDirectory.trim() === ""
+    !isValidIP(serverConfig.host) ||
+    typeof serverConfig.remotePath !== "string" ||
+    serverConfig.remotePath.trim() === ""
   ) {
     throw new Error(
       `Invalid server configuration:\n${JSON.stringify(serverConfig, null, 2)}`
@@ -63,35 +61,49 @@ const isEmptyObject = (obj) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 
-
-// 删除操作
-const clearOperation = async (dest) => {
-  await exec(`rm -rf ${dest}`)
-}
-
-
 // 过滤对象内空属性值的key
 const removeEmptyProperties = (obj) => {
-  const isEmpty = (value) => (
+  const isEmpty = (value) =>
     value === undefined ||
     value === null ||
-    value === '' ||
+    value === "" ||
     value === 0 ||
     value === false ||
     (Array.isArray(value) && value.length === 0) ||
-    (typeof value === 'object' && Object.keys(value).length === 0)
-  );
+    (typeof value === "object" && Object.keys(value).length === 0);
 
   return Object.entries(obj)
     .filter(([key, value]) => !isEmpty(value))
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 };
 
+// 校验环境变量
+const areAllEnvVarsDefined = () => {
+  const defaults = {
+    SERVER_NAME: "Server Username",
+    IP: "Server IP Address",
+    DEPLOY_PATH: "Frontend Deployment Path",
+    PASSWORD: "Password",
+  };
+  for (const key in defaults) {
+    if (!process.env[key] || process.env[key] === defaults[key]) {
+      console.log(
+        `${chalk.red("[ERROR]")} Environment variable ${chalk.blue(
+          key
+        )} is not defined or has an empty value.`
+      );
+      process.exit(0);
+    }
+  }
+  return true;
+};
+
+
 
 module.exports = {
   validateServerConfig,
   deleteFolderRecursive,
   isEmptyObject,
-  clearOperation,
   removeEmptyProperties,
+  areAllEnvVarsDefined,
 };

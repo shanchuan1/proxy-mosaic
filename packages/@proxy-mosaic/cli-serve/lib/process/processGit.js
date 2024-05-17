@@ -3,32 +3,28 @@
  * @Author: shanchuan
  * @Date: 2024-04-22 14:37:43
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 18:10:18
+ * @LastEditTime: 2024-05-17 14:41:19
  */
 const Git = require("simple-git");
-const chalk = require("chalk");
 const ReposConfigurator = require("../mosaicConfig");
 const { checkDir, checkDirEmpty } = require("./processFile");
 const  execProcess  = require("./execProcess");
-const { spinner_start, spinner_succeed, spinner_fail } =
-  require("../actuator/ora").processOra();
+const { chalk, processOra } = require("@proxy-mosaic/cli-shared-utils");
+const { spinner_start, spinner_succeed } = processOra();
 
 // 定义GIT对应的操作事件
 const OPERATION_FUNCTIONS = {
   clone: async (repo, gitInstance) => {
     await gitInstance.clone(repo.url, repo.dest);
     await spinner_succeed(`${repo.name} CLONE operation has been completed`);
-    await execProcess("INSTALL", { repo });
+    await execProcess("INSTALL",  repo );
     if (repo.isLastRepo) {
       process.exit(0);
     }
   },
   pull: async (repo, gitInstance) => {
-    gitInstance.pull() &&
-      console.log(
-        `\n Repository << ${repo.name} >> have already pulled the latest`
-      );
-    await spinner_succeed(`${repo.name} PULL operation has been completed`);
+    gitInstance.pull() 
+    await spinner_succeed(`${repo.name} have already pulled the latest in the branch of ${chalk.blue(repo.branches?.current || 'master')}`);
     if (repo.isLastRepo) {
       process.exit(0);
     }
@@ -37,8 +33,8 @@ const OPERATION_FUNCTIONS = {
     if ("branch" in repo) {
       try {
         await gitInstance.checkout([repo.branch]);
-        await spinner_succeed(
-          `${chalk.blue(repo.name)}: The ${chalk.blue(
+        console.log(
+          `${chalk.green("[INFO]")} ${chalk.blue(repo.name)}: The ${chalk.blue(
             "checkout"
           )} operation has been completed, and it has been checked out to branch ${chalk.blue(
             repo.branch
@@ -48,18 +44,12 @@ const OPERATION_FUNCTIONS = {
           process.exit(0);
         }
       } catch (err) {
-        spinner_fail(
-          `Error ${chalk.blue(
-            repo.name
-          )} switching branches of the ${chalk.blue(repo.branch)} :${err}`
-        );
+        console.log(`${chalk.red("[ERROR]")} ${chalk.blue(
+          repo.name
+        )} switching branches of the ${chalk.blue(repo.branch)} occurred ${chalk.red(err)}`);
         process.exit(0);
       }
     }
-    // TODO: 保留后续优化
-    // console.warn(
-    //   `Repository ${repo.name} does not contain a branch property, skipping branch switch.`
-    // );
   },
 };
 
@@ -88,12 +78,18 @@ module.exports = processRepositories = async (operation, paths, branch) => {
       }
 
       if (isHasDir && !isDirEmpty && operation === "clone") {
-        operation = "pull";
+        // operation = "pull";
+        console.log(
+          `${chalk.green("[INFO]")} The app of ${chalk.blue(repo.name)} has been generated`
+        );
+        process.exit(0)
       }
-      // TODO: 动画
-      await spinner_start(
-        `${repo.name} executing git ${operation.toUpperCase()} operation...\n`
-      );
+      
+      if (operation === "clone") {
+        await spinner_start(
+          `${repo.name} executing git ${operation.toUpperCase()} operation...`
+        );
+      }
       // 克隆或拉取操作
       await OPERATION_FUNCTIONS[operation](repo, gitInstance).catch((err) => {
         console.error(

@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
-const chalk = require("chalk");
-const { readFromJs, appendToJs } = require("../temp/index");
+const { chalk } = require('@proxy-mosaic/cli-shared-utils')
+const { loadTempData, saveTempData } = require("../temp/index");
 
 const chooseBuildModePrompt = {
   type: "list",
@@ -24,7 +24,7 @@ const addBuildModePrompt = {
 
 const buildInquirer = (options) => {
   let promptList = [];
-  const { buildModeList } = readFromJs("build");
+  const { buildModeList } = loadTempData("build");
   if (options.config) {
     if (buildModeList?.length) {
       chooseBuildModePrompt.choices = buildModeList;
@@ -44,7 +44,7 @@ const buildInquirer = (options) => {
           }
           const newBuildMode = answers.newBuildMode;
           chooseBuildModePrompt.choices.push(newBuildMode);
-          appendToJs("buildModeList", chooseBuildModePrompt.choices, "build");
+          saveTempData("buildModeList", chooseBuildModePrompt.choices, "build");
         } else {
           resolve(answers);
         }
@@ -69,12 +69,12 @@ const addServerList = [
   {
     type: "input",
     message: "enter one server address",
-    name: "ip",
+    name: "host",
   },
   {
     type: "input",
     message: "enter the front resource path ",
-    name: "deployDirectory",
+    name: "remotePath",
   },
   {
     // type: 'password', 暂时明文密码输入
@@ -86,7 +86,7 @@ const addServerList = [
 
 const deployInquirer = (options) => {
   let promptList = [];
-  const server = readFromJs("server");
+  const server = loadTempData("server");
   if (options.config) {
     deployServerList.choices = Object.keys(server);
     if (Object.keys(server).length > 0) {
@@ -106,7 +106,7 @@ const deployInquirer = (options) => {
       .prompt(promptList)
       .then((answers) => {
         if (options.add) {
-          appendToJs(answers.ip, answers, "server");
+          saveTempData(answers.ip, answers, "server");
           resolve(answers);
         } else {
           resolve(server[answers.server]);
@@ -123,7 +123,7 @@ const cleanAppList = {
   choices: [],
 };
 const cleanInquirer = (options) => {
-  const repos = readFromJs("repos");
+  const repos = loadTempData("repos");
   let promptList = [];
   if (options.config) {
     cleanAppList.choices = Object.keys(repos);

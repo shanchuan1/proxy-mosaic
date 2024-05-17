@@ -3,10 +3,10 @@
  * @Author: shanchuan
  * @Date: 2024-05-14 17:11:21
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-14 18:17:46
+ * @LastEditTime: 2024-05-17 11:05:49
  */
 const ReposConfigurator = require("../mosaicConfig");
-const chalk = require("chalk");
+const { chalk } = require("@proxy-mosaic/cli-shared-utils");
 
 /**
  * @description: 检查仓库信息
