@@ -4,11 +4,10 @@ nav:
   order: 0
 toc: menu
 ---
+
 # 介绍
 
-proxy-mosaic 是一个本地化前端工程的代理服务工具,包括但不限于CICD, 本地nginx, 一键化指令操作
-
-
+proxy-mosaic 是一个本地化前端工程的代理服务工具,包括但不限于 CICD, 本地 nginx, 一键化指令操作
 
 ## 使用
 
@@ -26,8 +25,9 @@ yarn global add @proxy-mosaic/cli
 mosaic create project
 ```
 
-## 目录结构
-```
+### 目录结构
+
+```js
 project_mosaic
 ├─ .env
 ├─ .gitignore
@@ -37,11 +37,30 @@ project_mosaic
 ├─ packages
 ├─ README.md
 └─ yarn.lock
+
+mosaic.config.js文件配置
 ```
 
+### 脚本
 
-## 脚本
 ```js
+"scripts": {
+  "gen": "mosaic-serve generate",
+  "pull": "mosaic-serve git pull",
+  "checkout": "mosaic-serve git checkout",
+  "build": "mosaic-serve build",
+  "deploy": "mosaic-serve deploy -c",
+  "inspect": "mosaic-serve inspect -b"
+},
+
+```
+
+```js
+// 初始化  前置mosaic.config.js配置完你的项目 执行初始化
+yarn gen
+
+// pull  更新所有仓库当前分支的代码
+yarn pull
 
 // 切换分支
 yarn checkout 'branch' // 默认即为 yarn checkout 'branch' all  ===>  统一切换指定分支
@@ -59,7 +78,7 @@ yarn build '[appName...]' -m  //自定义打包模式
 // yarn build h5 -m build:plugin  // 打包h5项目并自定义打包模式
 
 // 新增配置打包模式
-yarn build -a 
+yarn build -a
 
 // 默认配置的几个打包模式
 yarn build -d    // --dev dev模式
@@ -72,6 +91,5 @@ yarn build -p    // --pro pro模式
 yarn deploy // 默认即为 yarn deploy all   ===>  部署全部应用
 yarn deploy  '[appName...]' // 指定部署的app
 yarn deploy '[appName...]' -c //选择所需部署的服务器
+
 ```
-
-

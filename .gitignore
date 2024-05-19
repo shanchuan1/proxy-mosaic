@@ -1,3 +1,7 @@
 node_modules
-.dumi
-*.log
+/dist
+.dumi/tmp
+.dumi/tmp-production
+.DS_Store
+package-lock.json
+need.md
