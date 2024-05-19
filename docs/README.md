@@ -6,5 +6,6 @@ hero:
   actions:
     - text: 快速开始 →
       link: /guide
+footer: MIT Licensed | Copyright © 2024 Powered by [dumi](https://d.umijs.org)
 ---
 
