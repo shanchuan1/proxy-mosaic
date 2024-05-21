@@ -5,7 +5,6 @@ const repo = 'proxy-mosaic';
 
 export default defineConfig({
   title: repo,
-  mode: 'site',
   base: process.env.NODE_ENV === 'production' ? `/${repo}/` : '/',
   publicPath: process.env.NODE_ENV === 'production' ? `/${repo}/` : '/',
   favicons: [
