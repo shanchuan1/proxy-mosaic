@@ -16,8 +16,10 @@ jobs:
           npm install
           npm run build
 
-      - name: Deploy to Github
-        uses: JamesIves/github-pages-deploy-action@4.0.0
+       - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          branch: build
-          folder: build
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs-dist
+          commit_message: 'Deploy Dumi Docs 🚀' # 部署提交的消息
+          branch: gh-pages
