@@ -1,6 +1,5 @@
 {
   "name": "proxy-mosaic",
-  "private": true,
   "description": "🛠️ One click (start, package, deploy) proxy tool for front-end application groups",
   "keywords": [
     "proxy",
