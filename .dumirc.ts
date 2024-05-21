@@ -1,8 +1,13 @@
 import { defineConfig } from 'dumi';
 import { version } from './package.json';
 
+const repo = 'proxy-mosaic';
+
 export default defineConfig({
-  html2sketch: {},
+  title: repo,
+  mode: 'site',
+  base: process.env.NODE_ENV === 'production' ? `/${repo}/` : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? `/${repo}/` : '/',
   favicons: [
     '/mosaic2.png',
   ],

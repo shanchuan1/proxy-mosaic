@@ -6,19 +6,24 @@ on:
       - main # default branch
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
         with:
-          fetch-depth: 0
-      - name: Install dependencies
-        run: npm install
-      - name: Build with dumi
-        run: npm run build
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+          node-version: 15.x
+
+      - name: Build Project
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to Github
+        uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs-dist
+          branch: build
+          folder: build
