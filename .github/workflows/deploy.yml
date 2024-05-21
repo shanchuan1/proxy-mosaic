@@ -1,0 +1,8 @@
+- name: Push to GitHub Pages
+  env:
+    token: ${{ secrets.GH_PAT }}
+  run: |
+    git config --global user.name "zhongqifeng"
+    git config --global user.email "1121021693@qq.com"
+    git remote set-url origin https://$token@github.com/shanchuan1/proxy-mosaic.git
+    git push origin gh-pages
