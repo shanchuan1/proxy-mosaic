@@ -19,7 +19,9 @@ export default defineConfig({
     hd: { rules: [] },
     rtl: true,
     name: 'proxy-mosaic',
-    logo: '/mosaic2.png',
+    // logo: '/mosaic2.png',
+    // github page作为站点补全地址
+    logo: 'https://shanchuan1.github.io/proxy-mosaic/mosaic2.png',
     footer: `Open-source MIT Licensed | Copyright © 2019-present
 <br />
 Powered by self`,
