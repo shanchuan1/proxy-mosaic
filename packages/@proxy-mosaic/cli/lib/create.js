@@ -25,6 +25,7 @@ const create = async (options) => {
     private: true,
     scripts: {
       gen: "mosaic-serve generate",
+      start: "mosaic-serve start",
       pull: "mosaic-serve git pull",
       checkout: "mosaic-serve git checkout",
       build: "mosaic-serve build",

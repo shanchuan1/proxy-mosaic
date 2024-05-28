@@ -25,7 +25,8 @@
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "lib",
+    "vite"
   ],
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"

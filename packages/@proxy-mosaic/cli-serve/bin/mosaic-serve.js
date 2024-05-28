@@ -59,6 +59,13 @@ program
   .action((paths, options) => getCommandParams("generate", paths, options));
 
 program
+  .command("start [paths...]")
+  .description("start the apps powered by proxy-mosaic")
+  .option("-p, --path <path>", "Specify the project you need to clone")
+  .option("-l, --log", "The console expand dependent output")
+  .action((paths, options) => getCommandParams("start", paths, options));
+
+program
   .command("build [paths...]")
   .description("build the apps resource re powered by proxy-mosaic")
   .option("-d, --dev ", "development mode")
