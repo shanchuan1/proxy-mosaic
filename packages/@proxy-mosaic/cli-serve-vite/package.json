@@ -1,0 +1,46 @@
+{
+  "name": "@proxy-mosaic/cli-serve-vite",
+  "version": "0.0.6",
+  "description": "Provide vite services for proxy-mosaic",
+  "keywords": [
+    "vite",
+    "mosaic"
+  ],
+  "author": {
+    "name": "shanchuan",
+    "url": "https://github.com/shanchuan1"
+  },
+  "homepage": "https://github.com/shanchuan1/proxy-mosaic#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shanchuan1/proxy-mosaic",
+    "directory": "packages/@proxy-mosaic/cli-share-vite"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@originjs/vite-plugin-require-context": "^1.0.9",
+    "@vitejs/plugin-vue2-jsx": "^1.1.1",
+    "sass": "^1.77.2",
+    "vite": "4.5.1",
+    "vite-plugin-commonjs": "^0.10.1",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-lang-jsx": "^1.5.3",
+    "vite-plugin-style-import": "^2.0.0",
+    "vite-plugin-vue2": "^2.0.3"
+  },
+  "bugs": {
+    "url": "https://github.com/shanchuan1/proxy-mosaic/issues"
+  }
+}

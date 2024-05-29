@@ -1,5 +1,5 @@
 /*
- * @Description: 
+ * @Description:
  * @Author: shanchuan
  * @Date: 2024-05-11 11:08:01
  * @LastEditors: Please set LastEditors
@@ -7,6 +7,7 @@
  */
 module.exports = {
     processExecBuild: require('./processBuild'),
+    processExecStart: require('./processStart'),
     ...require('./processClean'),
     processExecDeploy: require('./processDeploy'),
     ...require('./processFile'),

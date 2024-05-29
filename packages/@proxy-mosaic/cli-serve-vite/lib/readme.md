@@ -1,3 +1,16 @@
+<!--
+ * @Description: 
+ * @Author: shanchuan
+ * @Date: 2024-05-29 10:19:37
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-05-29 18:19:02
+-->
+## 问题
+用来完全抹平webpack与vite配置的差异是不太可能的，每个项目自由度很高，大小都会出现不太通的差异报错，以代码覆盖自由配置的idea很难实现，
+就算强行抹平现有差异，但是这样的代价远不如改造迁移原vue-cli工程来的便利
+
+
+
 ```js
 import { defineConfig } from "vite";
 import { createVuePlugin as vue } from "vite-plugin-vue2"; //vue 2
@@ -11,6 +24,8 @@ const path = require("path");
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base,
+  assetsInclude: ["**/*.html"],
   plugins: [
     // 必须写在vue、vueJsx之前
     langJsx()[1],
@@ -59,16 +74,6 @@ export default defineConfig({
     // 官方不建议忽略自定义导入类型的扩展名（例如：.vue），因为它会影响 IDE 和类型支持
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
   },
-  define: {
-    'process.env': process.env
-  },
-  server: {
-    proxy: {
-      '/api': {
-        rewrite: (path) => path.replace('/^/\api/', ''),
-      }
-    }
-  },
   css: {
     preprocessorOptions: {
       scss: {
@@ -78,6 +83,16 @@ export default defineConfig({
         additionalData: `@import "src/styles/var.less";`
       },
     },
+  },
+    define: {
+    'process.env': process.env
+  },
+  server: {
+    proxy: {
+      '/api': {
+        rewrite: (path) => path.replace('/^/\api/', ''),
+      }
+    }
   },
 });
 

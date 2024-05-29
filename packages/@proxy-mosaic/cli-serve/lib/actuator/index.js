@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-11 11:01:24
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-28 11:27:32
+ * @LastEditTime: 2024-05-29 11:16:15
  */
 const { OPERATIONS } = require("../constant");
 const {
@@ -11,10 +11,10 @@ const {
   processExecBuild,
   processExecDeploy,
   processExecClean,
-  processExecInspect
+  processExecInspect,
+  processExecStart
 } = require('../process')
 const { isEmptyObject } = require("../utils");
-const processStart = require('../../vite')
 
 
 
@@ -23,7 +23,7 @@ const actuatorEvents = {
   generate: async (params) =>
     await processRepositories(OPERATIONS.CLONE, params.paths),
   start: async (params) =>
-    await processStart(params),
+    await processExecStart(params),
   pull: async (params) =>
     await processRepositories(OPERATIONS.PULL, params.paths),
   build: async (params) => await processExecBuild(params),

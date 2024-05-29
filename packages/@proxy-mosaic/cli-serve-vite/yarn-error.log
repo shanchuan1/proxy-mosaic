@@ -1,0 +1,72 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe D:\NODE\node_global\node_modules\yarn\bin\yarn.js
+
+PATH: 
+  C:\Users\yongen\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\yongen\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\Git\cmd;D:\NVM\nvm;D:\NODE\node_global;D:\NODE\node_global\node_modules\yarn\bin;D:\微信开发者工具\微信web开发者工具\dll;C:\Program Files\Docker\Docker\resources\bin;C:\Users\yongen\AppData\Local\Microsoft\WindowsApps;C:\Users\yongen\AppData\Roaming\npm;C:\Users\yongen\AppData\Local\Programs\Microsoft VS Code\bin;D:\NVM\nvm;C:\Program Files\nodejs;D:\NODE\node_global;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.14.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  SyntaxError: D:\ShanChuan\GitHub\proxy-mosaic\packages\@proxy-mosaic\cli-serve-vite\package.json: Unexpected token } in JSON at position 1006
+      at JSON.parse (<anonymous>)
+      at D:\NODE\node_global\node_modules\yarn\lib\cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (D:\NODE\node_global\node_modules\yarn\lib\cli.js:310:30)
+      at D:\NODE\node_global\node_modules\yarn\lib\cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "cli-serve-vite",
+    "version": "0.0.6",
+    "description": "Provide vite services for proxy-mosaic",
+    "keywords": [
+      "vite",
+      "mosaic"
+    ],
+    "author": "zhongqifeng <1121021693@qq.com>",
+    "homepage": "https://github.com/shanchuan1/proxy-mosaic#readme",
+    "license": "ISC",
+    "main": "lib/cli-serve-vite.js",
+    "directories": {
+      "lib": "lib",
+      "test": "__tests__"
+    },
+    "files": [
+      "lib"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/shanchuan1/proxy-mosaic.git"
+    },
+    "scripts": {
+      "test": "echo \"Error: run tests from root\" && exit 1"
+    },
+    "devDependencies": {
+      "@originjs/vite-plugin-commonjs": "^1.0.3",
+      "@originjs/vite-plugin-require-context": "^1.0.9",
+      "@vitejs/plugin-vue2-jsx": "^1.1.1",
+      "sass": "^1.77.2",
+      "vite": "4.5.1",
+      "vite-plugin-commonjs": "^0.10.1",
+      "vite-plugin-html": "^3.2.2",
+      "vite-plugin-lang-jsx": "^1.5.3",
+      "vite-plugin-style-import": "^2.0.0",
+      "vite-plugin-vue2": "^2.0.3",
+    },
+    "bugs": {
+      "url": "https://github.com/shanchuan1/proxy-mosaic/issues"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

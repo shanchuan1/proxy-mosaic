@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@proxy-mosaic/cli-shared-utils": "^0.0.6",
+    "@proxy-mosaic/cli-serve-vite": "^0.0.6",
     "archiver": "^7.0.1",
     "commander": "8.0.0",
     "dotenv": "10.0.0",
