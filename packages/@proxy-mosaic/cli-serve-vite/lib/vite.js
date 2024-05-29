@@ -4,6 +4,7 @@ const commonjs = require('vite-plugin-commonjs');
 const viteRequireContext = require('@originjs/vite-plugin-require-context');
 const { createStyleImportPlugin } = require('vite-plugin-style-import');
 const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
+const viteRedirectPlugin = require('./vite-redirect-plugin');
 const path = require('path');
 
 const extensions = [
@@ -27,6 +28,7 @@ const initialConfig = {
     commonjs.default({ extensions }),
     viteRequireContext.default(),
     viteCommonjs(),
+    viteRedirectPlugin({fromPrefix: '/plugins', toPrefix: '/apps/doc-manage-web/plugins'})
     // createStyleImportPlugin()
   ],
   server: {
