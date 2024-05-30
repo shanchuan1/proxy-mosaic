@@ -57,7 +57,7 @@ const viteServerManager = async (dest) => {
     // process.chdir(path.join(__dirname))
 
     const server = await createServer(config);
-    await server.listen(3000);
+    await server.listen();
     server.printUrls();
 
   } catch (error) {
