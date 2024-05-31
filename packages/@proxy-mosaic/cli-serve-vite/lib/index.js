@@ -1,31 +1,33 @@
 const { createServer } = require('vite');
 const ViteConfigManager = require('./vite');
 const path = require('path');
+const fs = require('fs').promises;
 const http = require('http');
-const { createHtmlPlugin } = require('vite-plugin-html');
+const dynamicHtmlPlugin = require('./vite-dynamic-html-plugin');
 
 
-const rootPath = path.join(__dirname, './index.html')
 
 const defaultAliasConfig = [
   {
     find: /^~.+/,
-    replacement: val => val.replace(/^~/, ''),
+    replacement: (val) => val.replace(/^~/, ''),
   },
-]
+];
 
 const transAliasConfig = (config) => {
-  const transArr =  Object.entries(config).map(([k,v])=>{
-    return {
-      find: k,
-      replacement: v,
-    }
-  }).filter(v=> v.replacement.includes('\\'))
-  return defaultAliasConfig.concat(transArr)
-}
+  const transArr = Object.entries(config)
+    .map(([k, v]) => {
+      return {
+        find: k,
+        replacement: v,
+      };
+    })
+    .filter((v) => v.replacement.includes('\\'));
+  return defaultAliasConfig.concat(transArr);
+};
 
-
-const transformWebpackToVite = (dest) => {
+const transformWebpackToVite = async (dest) => {
+  console.log('🚀 ~ transformWebpackToVite ~ dest:', dest);
   const vueConfig = require(`${dest}/vue.config.js`);
   ViteConfigManager.setProperty('base', vueConfig.publicPath);
   ViteConfigManager.setProperty('server', vueConfig.devServer);
@@ -37,20 +39,26 @@ const transformWebpackToVite = (dest) => {
     'css.preprocessorOptions.scss.additionalData',
     vueConfig.css.loaderOptions.sass.prependData.replace(/~/g, ''),
   );
-  // ViteConfigManager.setProperty(
-  //   'plugins',
-  //   [
-  //     createHtmlPlugin({
-  //       minify: true,
-  //       entry: `${dest}/src/main.js`,
-  //       template: rootPath,
-  //     }),
-  //   ],
-  // );
+  // const vueCLiHtml = await fs.readFile(`${dest}\\public\\index.html`, 'utf8');
+  // console.log('🚀 ~ transformWebpackToVite ~ vueCLiHtml:', vueCLiHtml);
+  // ViteConfigManager.setProperty('plugins', [
+  //   dynamicHtmlPlugin({
+  //     inputHtml: vueCLiHtml,
+  //     params: {
+  //       '/doc-manage-web/static/favicon.ico':
+  //         '/public/static/favicon.ico',
+  //       '/doc-manage-web/static/polyfills/object.js':
+  //         '/public/static/polyfills/object.js',
+  //     },
+  //     additionalScripts: ['src/main.js'],
+  //     newTitle: vueConfig.publicPath,
+  //     rootDir: dest,
+  //   }),
+  // ]);
 };
 
 const viteServerManager = async (dest) => {
-  transformWebpackToVite(dest);
+  await transformWebpackToVite(dest);
   try {
     const config = ViteConfigManager.getConfig();
     // console.log('🚀 ~ viteServerManager ~ config:', config)
@@ -59,15 +67,12 @@ const viteServerManager = async (dest) => {
     const server = await createServer(config);
     await server.listen();
     server.printUrls();
-
   } catch (error) {
     console.error(`processStart ~ error: ${error}`);
     process.exit(0);
   }
 };
 
-
-
 module.exports = {
-  viteServerManager
-}
+  viteServerManager,
+};

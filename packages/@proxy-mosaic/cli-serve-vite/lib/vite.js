@@ -5,6 +5,7 @@ const viteRequireContext = require('@originjs/vite-plugin-require-context');
 const { createStyleImportPlugin } = require('vite-plugin-style-import');
 const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
 const viteRedirectPlugin = require('./vite-redirect-plugin');
+const dynamicHtmlPlugin = require('./vite-dynamic-html-plugin');
 const path = require('path');
 
 const extensions = [
@@ -17,7 +18,6 @@ const extensions = [
   '.json',
   '.vue',
 ];
-
 // 通用默认抹平webpack to vite 配置项
 const initialConfig = {
   configFile: false,
@@ -25,6 +25,13 @@ const initialConfig = {
   assetsInclude: ['**/*.html'],
   plugins: [
     createVuePlugin(),
+    // dynamicHtmlPlugin({
+    //   inputHtml,
+    //   params,
+    //   additionalScripts,
+    //   newTitle,
+    //   rootDir: 'new-root-directory'
+    // }),
     commonjs.default({ extensions }),
     viteRequireContext.default(),
     viteCommonjs(),

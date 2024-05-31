@@ -3,9 +3,9 @@
  * @Author: shanchuan
  * @Date: 2024-05-30 20:48:51
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-30 22:20:10
+ * @LastEditTime: 2024-05-31 18:37:19
  */
-const { createHtml } = require('./html-generator'); // 假设这里有一个生成HTML的函数
+const { createHtml } = require('./html-generator');
 const { resolve } = require('path');
 
 module.exports = (options = {}) => ({
@@ -24,12 +24,13 @@ module.exports = (options = {}) => ({
       if (req.url === base || req.url === `${base}index.html`) {
         try {
           // 使用自定义函数生成HTML内容
-          const html = createHtml(
+          const htmlTemp = createHtml(
             options.inputHtml,
             options.params,
             options.additionalScripts,
             options.newTitle
           );
+          const html = await server.transformIndexHtml(req.url, htmlTemp, req.originalUrl);
           res.setHeader('Content-Type', 'text/html');
           res.statusCode = 200;
           res.end(html);
@@ -40,35 +41,8 @@ module.exports = (options = {}) => ({
           res.end('Error generating index.html');
         }
       } else {
-        next(); // 其他请求正常处理
+        next(); 
       }
     });
   },
 });
-
-
-/* 使用此插件
-const params = {
-  "/doc-manage-web/static/favicon.ico": "/new-path/favicon.ico",
-  "/apps/doc-manage-web/public/static/polyfills/object.js": "/new-path/object.js",
-  "/apps/doc-manage-web/src/main.js": "/new-path/main.js"
-};
-
-const additionalScripts = ["/new-script1.js", "/new-script2.js"];
-const newTitle = "新的文档中心";
-
-module.exports = defineConfig({
-  base: '/doc', // Set the base URL
-  plugins: [
-    dynamicHtmlPlugin({
-      inputHtml,
-      params,
-      additionalScripts,
-      newTitle,
-      rootDir: 'new-root-directory' // 设置新的根目录
-    })
-  ]
-})
-
-
-*/

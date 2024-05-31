@@ -68,6 +68,14 @@ function createHtml(inputHtml, params, additionalScripts = [], newTitle = 'Dynam
   return finalHtml;
 }
 
+
+
+module.exports = {
+  createHtml
+}
+
+
+/*
 // Example usage
 const inputHtml = `
 <!DOCTYPE html>
@@ -100,3 +108,4 @@ const additionalScripts = ["/new-script1.js", "/new-script2.js"];
 const newTitle = "新的文档中心";
 
 console.log(createHtml(inputHtml, params, additionalScripts, newTitle));
+*/

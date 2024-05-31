@@ -1,9 +1,9 @@
 /*
- * @Description:
+ * @Description: 
  * @Author: shanchuan
  * @Date: 2024-05-28 20:18:27
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-28 22:14:28
+ * @LastEditTime: 2024-05-31 18:32:56
  */
 const {createVuePlugin} = require('vite-plugin-vue2');
 const commonjs = require('vite-plugin-commonjs');
@@ -41,10 +41,6 @@ let config = {
           find: 'static',
           replacement: path.join(__dirname, 'apps/doc-manage-web/public/static'),
         },
-        // {
-        //   find: 'plugins',
-        //   replacement: path.join(__dirname, 'apps/doc-manage-web/plugins'),
-        // },
       ],
       extensions,
     },
