@@ -1,12 +1,11 @@
-// import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
-const { createVuePlugin } = require('vite-plugin-vue2');
-const commonjs = require('vite-plugin-commonjs');
-const viteRequireContext = require('@originjs/vite-plugin-require-context');
-const { createStyleImportPlugin } = require('vite-plugin-style-import');
-const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
-const viteRedirectPlugin = require('./vite-redirect-plugin');
-const dynamicHtmlPlugin = require('./vite-dynamic-html-plugin');
-const path = require('path');
+/*
+ * @Description:
+ * @Author: shanchuan
+ * @Date: 2024-05-29 19:37:55
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2024-06-01 23:01:37
+ */
+const commonPlugins = require('./commonPlugins');
 
 const extensions = [
   '.mjs',
@@ -24,19 +23,7 @@ const initialConfig = {
   base: '',
   assetsInclude: ['**/*.html'],
   plugins: [
-    createVuePlugin(),
-    // dynamicHtmlPlugin({
-    //   inputHtml,
-    //   params,
-    //   additionalScripts,
-    //   newTitle,
-    //   rootDir: 'new-root-directory'
-    // }),
-    commonjs.default({ extensions }),
-    viteRequireContext.default(),
-    viteCommonjs(),
-    viteRedirectPlugin({fromPrefix: '/plugins', toPrefix: '/apps/doc-manage-web/plugins'})
-    // createStyleImportPlugin()
+    ...commonPlugins,
   ],
   server: {
     open: true,
@@ -63,31 +50,40 @@ class ViteConfigManager {
     this.config = { ...initialConfig };
   }
 
-  // 获取配置的只读副本
   getConfig() {
     return { ...this.config };
   }
 
-  // 设置或更新配置的某个属性
   setProperty(path, value) {
-    const keys = path.split('.');
+    const segments = path.split('.');
     let current = this.config;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) {
-        current[keys[i]] = {};
+
+    for (let i = 0; i < segments.length; i++) {
+      if (i === segments.length - 1) {
+        if (
+          typeof value === 'object' &&
+          !Array.isArray(value) &&
+          !(value instanceof Date)
+        ) {
+          // 对象
+          current[segments[i]] = current[segments[i]]
+            ? { ...current[segments[i]], ...value }
+            : value;
+        } else if (Array.isArray(value)) {
+          // 数组
+          current[segments[i]] = current[segments[i]]
+            ? current[segments[i]].concat(value)
+            : value;
+        } else {
+          current[segments[i]] = value;
+        }
+      } else {
+        if (!current[segments[i]]) current[segments[i]] = {};
+        current = current[segments[i]];
       }
-      current = current[keys[i]];
-    }
-    if (typeof value === 'string') {
-      current[keys[keys.length - 1]] = value;
-    } else {
-      current[keys[keys.length - 1]] = Array.isArray(value)
-        ? [...current[keys[keys.length - 1]], ...value]
-        : { ...current[keys[keys.length - 1]], ...value };
     }
   }
 
-  // 获取配置的某个属性
   getProperty(path) {
     const keys = path.split('.');
     let current = this.config;
@@ -99,6 +95,31 @@ class ViteConfigManager {
       }
     }
     return current;
+  }
+
+  mergeConfig(defineConfig) {
+    const mergeDeep = (target, source) => {
+      Object.keys(source).forEach((key) => {
+        if (
+          source[key] instanceof Object &&
+          source[key].constructor === Object
+        ) {
+          if (!target[key]) target[key] = {};
+          mergeDeep(target[key], source[key]);
+        } else if (Array.isArray(source[key])) {
+          if (!target[key]) target[key] = [];
+          source[key].forEach((item) => {
+            if (!target[key].includes(item)) {
+              target[key].push(item);
+            }
+          });
+        } else {
+          target[key] = source[key];
+        }
+      });
+    };
+
+    mergeDeep(this.config, defineConfig);
   }
 }
 

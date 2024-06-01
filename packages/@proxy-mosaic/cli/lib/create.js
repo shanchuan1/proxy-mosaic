@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-10 10:34:32
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-17 17:26:31
+ * @LastEditTime: 2024-06-01 19:03:14
  */
 const path = require("path");
 const validateProjectName = require("validate-npm-package-name");
@@ -12,6 +12,7 @@ const writeFileTree = require("./utils/writeFileTree");
 const PackageManager = require('./utils/projectPackageManager')
 const {clearConsole } = require('./utils')
 const packageJson = require("../package.json").version;
+const template = require("../template")
 
 
 process.env.MOSAIC_CLI_CONTEXT;
@@ -45,9 +46,10 @@ const create = async (options) => {
     apps: null,
     packages: null,
     "package.json": JSON.stringify(pkg, null, 2),
-    "mosaic.config.js": require("../template/mosaic.config.js"),
-    ".env": require("../template/env.js"),
-    ".gitignore": require("../template/gitignore.js"),
+    "mosaic.config.js": template.mosaicConfig,
+    ".env":  template.env,
+    ".gitignore": template.gitignore,
+    "index.html": template.html,
   });
   console.log(`mosaic ${chalk.green.bold("success")} Initialized Mosaic files`);
 
@@ -58,9 +60,7 @@ const create = async (options) => {
 
   await clearConsole()
   const pm = new PackageManager({ context, forcePackageManager: packageManager })
-  // console.log('🚀 ~ create ~ pm:', pm)
   pm.install()
-  // process.exit(0);
 };
 
 const getCurrentProInfo = (options) => {

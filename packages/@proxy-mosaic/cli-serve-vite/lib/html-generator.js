@@ -14,11 +14,9 @@ const templateHtml = `
 `;
 
 function createHtml(inputHtml, params, additionalScripts = [], newTitle = 'Dynamic Index') {
-  // Extract <link> and <script> tags
   const linkTags = [];
   const scriptTags = [];
 
-  // Regular expressions for link and script tags
   const linkRegex = /<link\b[^>]*href="([^"]*)"[^>]*>/g;
   const scriptRegex = /<script\b[^>]*src="([^"]*)"[^>]*><\/script>/g;
   const titleRegex = /<title>([^<]*)<\/title>/;
@@ -33,7 +31,6 @@ function createHtml(inputHtml, params, additionalScripts = [], newTitle = 'Dynam
     scriptTags.push(match[0]);
   }
 
-  // Function to modify href or src attributes based on params
   function modifyTag(tag, attr, params) {
     return tag.replace(new RegExp(`${attr}="([^"]*)"`, 'g'), (match, p1) => {
       const newValue = params[p1];
@@ -41,18 +38,10 @@ function createHtml(inputHtml, params, additionalScripts = [], newTitle = 'Dynam
     });
   }
 
-  // Modify link tags
   const modifiedLinkTags = linkTags.map(tag => modifyTag(tag, 'href', params));
-  // Modify script tags
   const modifiedScriptTags = scriptTags.map(tag => modifyTag(tag, 'src', params));
-
-  // Create additional script tags
   const newScriptTags = additionalScripts.map(src => `<script type="module" src="${src}"></script>`);
-
-  // Modify the title
   const modifiedHtml = templateHtml.replace(titleRegex, `<title>${newTitle}</title>`);
-
-  // Inject modified tags into templateHtml
   const headEndIndex = modifiedHtml.indexOf('</head>');
   const bodyEndIndex = modifiedHtml.indexOf('</body>');
 

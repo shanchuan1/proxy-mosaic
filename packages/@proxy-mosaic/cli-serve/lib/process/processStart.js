@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-05-29 11:15:27
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-05-29 11:30:17
+ * @LastEditTime: 2024-06-01 18:13:03
  */
 
 const { viteServerManager } = require('@proxy-mosaic/cli-serve-vite')
@@ -22,7 +22,7 @@ module.exports = processExecStart = async (params) => {
 
    //TODO: 校验是否vue2+cli，则vite冷服务启动
    for (const repo of repos) {
-    await viteServerManager(repo.dest)
+    await viteServerManager({dest: repo.dest, repos})
    }
 
 };
