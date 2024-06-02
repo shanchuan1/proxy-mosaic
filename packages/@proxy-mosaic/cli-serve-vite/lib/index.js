@@ -97,7 +97,7 @@ class viteServerManager {
       // console.log('🚀 ~ startViteServer ~ config:', config);
 
       const server = await createServer(config);
-      console.log('🚀 ~ viteServerManager ~ startViteServer ~ css:', server.config.css)
+      console.log('🚀 ~ viteServerManager ~ startViteServer ~ plugins:', server.config.plugins)
       await server.listen();
       server.printUrls();
     } catch (error) {

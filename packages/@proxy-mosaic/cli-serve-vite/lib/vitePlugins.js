@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-06-01 12:46:53
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-06-01 14:39:09
+ * @LastEditTime: 2024-06-02 13:40:28
  */
 const fs = require('fs').promises;
 const path = require('path');
@@ -103,3 +103,49 @@ exports.viteRedirectPlugin = (options = {}) => ({
     });
   },
 });
+
+
+exports.viteControlPlugin = () => ({
+    name: 'vite-control-plugin',
+    configResolved(config) {
+      if (config.plugins.some(p => p.name === 'vite:import-analysis')) {
+        config.plugins.map(v=> {
+          if (v.name === 'vite:import-analysis') {
+            v.transform = (async() => {try{ await v.transform() }catch(e){}})
+            v.configureServer = (() => {try{  v.configureServer() }catch(e){}})
+          }
+        })
+      }
+    },
+})
+
+
+let originalTransform;
+exports.tryCatchWrapperPlugin = (targetPluginName) => (
+  {
+    name: 'try-catch-transform-wrapper',
+    enforce: 'pre', // 尝试在目标插件之前执行
+    configResolved(config) {
+      // 在配置解析完毕后查找目标插件，并保存其transform方法
+      const targetPlugin = config.plugins.find(plugin => plugin.name === targetPluginName);
+      if (targetPlugin && typeof targetPlugin.transform === 'function') {
+        originalTransform = targetPlugin.transform.bind(targetPlugin);
+        delete targetPlugin.transform; // 移除原始transform，以防止直接调用
+      } else {
+        console.warn(`Unable to find or wrap transform for plugin named "${targetPluginName}".`);
+      }
+    },
+    transform(code, id) {
+      try {
+        // 尝试执行原始transform方法（如果找到的话）
+        if (originalTransform) {
+          return originalTransform(code, id);
+        }
+      } catch (error) {
+        console.error(`Error caught during transformation by ${targetPluginName}:`, error);
+        // 可以选择处理错误，比如返回一个备份的处理结果或空的处理结果
+        return null; // 或者根据需要返回一个合适的错误处理结果
+      }
+    },
+}
+)
