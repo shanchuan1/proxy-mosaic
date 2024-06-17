@@ -3,7 +3,7 @@
  * @Author: shanchuan
  * @Date: 2024-06-01 12:46:53
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-06-02 13:40:28
+ * @LastEditTime: 2024-06-17 10:41:45
  */
 const fs = require('fs').promises;
 const path = require('path');
@@ -149,3 +149,23 @@ exports.tryCatchWrapperPlugin = (targetPluginName) => (
     },
 }
 )
+
+
+// wepack中使用的node-sass，深度选择器为/deep/，在sass中不兼容，需要使用自定义插件将 /deep/ 替换为 ::v-deep
+exports.transformScss = () => {
+  return {
+    name: 'vite-plugin-transform-scss',
+    enforce: 'pre',
+    transform(src, id) {
+      if (
+        /\.(js|ts|tsx|vue)(\?)*/.test(id) &&
+        id.includes('lang.scss') &&
+        !id.includes('node_modules')
+      ) {
+        return {
+          code: src.replace(/\/deep\//gi, '::v-deep'),
+        };
+      }
+    },
+  };
+}
